@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Antigravity/Ag-Kit internals (if needed to ignore, check .agent usage)
+# .agent/ is usually committed as it contains project instructions
+# .kilo/ is usually ignored as it's a local cache
+.kilo/

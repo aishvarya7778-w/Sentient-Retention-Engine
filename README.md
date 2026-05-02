@@ -68,32 +68,16 @@ Stores past decisions for learning and audit:
 ## Project Structure
 
 sentient-retention-engine/
-├── frontend/                 # React + Tailwind CSS
-│   ├── src/
-│   │   ├── app/             # App configuration
-│   │   ├── pages/           # Dashboard page
-│   │   └── services/        # API client
-│   └── package.json
-│
-├── backend/                  # Node.js + Express
-│   ├── src/
-│   │   └── app.js           # Main API server
-│   ├── index.js
-│   └── package.json
-│
-├── ml-service/               # Python + FastAPI
-│   ├── main.py              # ML API endpoints
-│   └── requirements.txt
-│
-├── digital-twin/             # Digital Twin Engine
-│   └── engine.py            # Simulation logic
-│
-├── agentic-engine/           # Agentic AI Engine
-│   └── engine.py            # Full agent loop
-│
-├── database/                 # PostgreSQL
-│   └── schema.sql           # Database schema
-│
+├── apps/
+│   ├── frontend/                 # React + Tailwind CSS Dashboard
+│   ├── backend/                  # Node.js + Express API Gateway
+│   ├── ml-service/               # Python + FastAPI Prediction Service
+│   └── agentic-ai/               # LangGraph Orchestrator & Digital Twin
+├── infra/
+│   ├── database/                 # PostgreSQL Schema & migrations
+│   ├── monitoring/               # Prometheus & Grafana configurations
+│   └── nginx/                    # Reverse proxy configuration
+├── docker-compose.yml            # Container orchestration
 └── README.md
 
 ## API Endpoints
@@ -190,6 +174,7 @@ Retrieve memory for a user.
 - Node.js 18+
 - Python 3.9+
 - PostgreSQL 14+
+- Docker & Docker Compose (optional, for containerized setup)
 
 ### 1. Database Setup
 
@@ -198,13 +183,13 @@ Retrieve memory for a user.
 psql -U postgres -c "CREATE DATABASE sentient_retention;"
 
 # Run schema
-psql -U postgres -d sentient_retention -f database/schema.sql
+psql -U postgres -d sentient_retention -f infra/database/schema.sql
 ```
 
 ### 2. ML Service Setup
 
 ```bash
-cd ml-service
+cd apps/ml-service
 
 # Create virtual environment
 python -m venv venv
@@ -215,53 +200,70 @@ pip install -r requirements.txt
 
 # Start service
 python main.py
-# Service runs on http://localhost:8001
+# Service runs on the configured ML service port
 
 # Optional: Train model
-curl -X POST http://localhost:8001/train
+curl -X POST http://localhost:[ML_PORT]/train
 ```
 
 ### 3. Backend Setup
 
 ```bash
-cd backend
+cd apps/backend
 
 # Install dependencies
 npm install
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your settings
+# Edit .env with your settings (including PORT and service URLs)
 
 # Start server
 npm start
-# Server runs on http://localhost:8000
+# Server runs on the configured Backend port
 ```
 
 ### 4. Frontend Setup
 
 ```bash
-cd frontend
+cd apps/frontend
 
 # Install dependencies
 npm install
 
 # Configure environment
 # Create .env file:
-# VITE_API_URL=http://localhost:8000
+# VITE_API_URL=http://localhost:[BACKEND_PORT]
 
 # Start development server
 npm run dev
-# Frontend runs on http://localhost:5173
+# Frontend dashboard is accessible via the development server
 ```
 
 ## Running the Full System
 
-1. Start PostgreSQL
-2. Start ML Service: `cd ml-service && python main.py`
-3. Start Backend: `cd backend && npm start`
-4. Start Frontend: `cd frontend && npm run dev`
-5. Open browser to <http://localhost:5173>
+### Option A: Local Development
+
+```bash
+# Start PostgreSQL
+pg_ctl -D /path/to/data start
+# Start ML Service
+cd apps/ml-service && python main.py
+# Start Backend
+cd apps/backend && npm start
+# Start Frontend
+cd apps/frontend && npm run dev
+```
+
+Access the dashboard via the URL provided by the frontend development server.
+
+### Option B: Docker Compose
+
+Run the entire stack using:
+
+```bash
+docker-compose up --build
+```
 
 ## How Agent Flow Works
 
@@ -274,8 +276,8 @@ User Input (usage, complaints, payment_delay)
 │   usage=15, complaints=3, delay=2   │
 │   → churn_risk = 0.65               │
 └─────────────────────────────────────┘
-         │
-         ▼
+          │
+          ▼
 ┌─────────────────────────────────────┐
 │       AGENTIC AI ENGINE             │
 │                                     │
@@ -289,8 +291,8 @@ User Input (usage, complaints, payment_delay)
 │ EXPLAIN: Generate reasoning         │
 │ ACT:     Return structured response │
 └─────────────────────────────────────┘
-         │
-         ▼
+          │
+          ▼
 ┌─────────────────────────────────────┐
 │       FRONTEND DASHBOARD            │
 │   Display risk, simulations,        │
@@ -303,7 +305,7 @@ User Input (usage, complaints, payment_delay)
 - **Backend**: Node.js, Express, Axios
 - **ML Service**: Python, FastAPI, scikit-learn
 - **Database**: PostgreSQL
-- **Digital Twin**: Python (simulated)
+- **Orchestration**: LangGraph, Docker Compose
 
 ## License
 

@@ -3,7 +3,8 @@ version: '3.8'
 services:
   # PostgreSQL Database
   postgres:
-    build: ../database
+    build:
+      context: ./infra/database
     container_name: sentient-postgres
     environment:
       POSTGRES_DB: sentient_retention
@@ -27,86 +28,63 @@ services:
     networks:
       - sentient-network
 
-  # Backend API
+  # Backend API Service
   backend:
-    build: ../backend
+    build:
+      context: ./apps/backend
     container_name: sentient-backend
     environment:
       PORT: 8000
       DATABASE_URL: postgresql://sentient_user:sentient_pass@postgres:5432/sentient_retention
       REDIS_URL: redis://redis:6379
-      PREDICTION_SERVICE_URL: http://prediction-service:8002
-      AGENT_SERVICE_URL: http://agent-service:8003
-      SIMULATION_SERVICE_URL: http://simulation-service:8004
+      ML_SERVICE_URL: http://ml-service:8001
+      AGENTIC_AI_URL: http://agentic-ai:8002
       NODE_ENV: production
+      API_VERSION: v1
     ports:
       - "8000:8000"
     depends_on:
       - postgres
       - redis
-      - prediction-service
-      - agent-service
-      - simulation-service
+      - ml-service
+      - agentic-ai
     networks:
       - sentient-network
 
-  # Agentic AI Service (original)
+  # Agentic AI Engine
   agentic-ai:
-    build: ../agentic-ai
+    build:
+      context: ./apps/agentic-ai
     container_name: sentient-agentic-ai
     environment:
       DATABASE_URL: postgresql://sentient_user:sentient_pass@postgres:5432/sentient_retention
       REDIS_URL: redis://redis:6379
       GROQ_API_KEY: ${GROQ_API_KEY:-placeholder-key}
     ports:
-      - "8001:8001"
+      - "8002:8002"
     depends_on:
       - postgres
       - redis
     networks:
       - sentient-network
 
-  # Prediction Service
-  prediction-service:
-    build: ../prediction-service
-    container_name: sentient-prediction
+  # ML Prediction Service
+  ml-service:
+    build:
+      context: ./apps/ml-service
+    container_name: sentient-ml-service
     environment:
-      DATABASE_URL: postgresql://sentient_user:sentient_pass@postgres:5432/sentient_retention
+      PORT: 8001
+      HOST: 0.0.0.0
     ports:
-      - "8002:8002"
-    depends_on:
-      - postgres
+      - "8001:8001"
     networks:
       - sentient-network
 
-  # Agent Service
-  agent-service:
-    build: ../agent-service
-    container_name: sentient-agent
-    environment:
-      DATABASE_URL: postgresql://sentient_user:sentient_pass@postgres:5432/sentient_retention
-      PREDICTION_SERVICE_URL: http://prediction-service:8002
-    ports:
-      - "8003:8003"
-    depends_on:
-      - postgres
-      - prediction-service
-    networks:
-      - sentient-network
-
-  # Simulation Service
-  simulation-service:
-    build: ../simulation-service
-    container_name: sentient-simulation
-    ports:
-      - "8004:8004"
-    networks:
-      - sentient-network
-
-  # Frontend
+  # Frontend Application
   frontend:
     build:
-      context: ../frontend
+      context: ./apps/frontend
       args:
         VITE_API_BASE_URL: /api/v1
     container_name: sentient-frontend
@@ -117,26 +95,21 @@ services:
     networks:
       - sentient-network
 
-  # Prometheus for metrics collection
+  # Prometheus Metrics
   prometheus:
     image: prom/prometheus:latest
     container_name: sentient-prometheus
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
     networks:
       - sentient-network
 
-  # Grafana for dashboards
+  # Grafana Dashboard
   grafana:
     image: grafana/grafana:latest
     container_name: sentient-grafana
@@ -144,24 +117,23 @@ services:
       - "3001:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./infra/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
       - prometheus
     networks:
       - sentient-network
 
-  # NGINX Load Balancer
+  # NGINX Entrypoint
   nginx:
     image: nginx:alpine
     container_name: sentient-nginx
     ports:
       - "8080:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - backend
       - frontend
