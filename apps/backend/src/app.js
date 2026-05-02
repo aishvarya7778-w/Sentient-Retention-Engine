@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
 const config = require('./config');
@@ -10,6 +11,9 @@ const retentionRoutes = require('./routes/retentionRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
+
+// Security Middleware
+app.use(helmet());
 
 // Middleware
 app.use(addCorrelationId);

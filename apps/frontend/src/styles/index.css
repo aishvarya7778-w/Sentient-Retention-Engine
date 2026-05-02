@@ -48,7 +48,7 @@
     --radius: 0.25rem;
 
     --iris-1: 320 90% 65%;
-    --iris-2: 270 90% 65%;
+    --iris-2: 185 90% 60%; /* Cyan instead of Purple */
     --iris-3: 200 90% 60%;
     --iris-4: 30 100% 60%;
 
@@ -70,7 +70,7 @@
     letter-spacing: -0.02em;
     font-weight: 400;
   }
-  .font-grotesk { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.04em; }
+  .font-grotesk { font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
   .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
 
   ::selection { background: hsl(var(--accent) / 0.4); color: hsl(var(--foreground)); }
@@ -130,4 +130,19 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
+}
+
+/* Specific Custom Scrollbar for Dashboard */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1a281e;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2a4230;
 }

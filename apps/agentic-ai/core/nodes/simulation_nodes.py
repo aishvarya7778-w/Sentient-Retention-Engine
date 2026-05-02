@@ -61,17 +61,17 @@ def node_nurture_sim(state: RetentionState) -> Dict[str, Any]:
     }
 
 def node_impact_eval_high(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 8a: Impact Eval (High)")
+    print("[NODE] 8a: Impact Assessment (High)")
     prob = min(0.4 + (state.get('simulation_iterations', 1) * 0.2), 0.95)
     return {
         "success_probability": prob,
-        "eval_reasoning": "Offer becomes more compelling with iteration."
+        "assessment_reasoning": "Offer becomes more compelling with iteration."
     }
 
 def node_impact_eval_low(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 8b: Impact Eval (Low)")
+    print("[NODE] 8b: Impact Assessment (Low)")
     prob = 0.85
     return {
         "success_probability": prob,
-        "eval_reasoning": "Engagement strategy is highly likely to boost NPS."
+        "assessment_reasoning": "Engagement strategy is highly likely to boost NPS."
     }

@@ -24,6 +24,7 @@ const ActionButton = ({ icon: Icon, label, sublabel, color, onClick, disabled })
   <button
     onClick={onClick}
     disabled={disabled}
+    aria-label={`${label}: ${sublabel}`}
     className={`flex flex-col items-center gap-2 p-5 rounded-2xl border transition-all active:scale-95 group ${
       disabled ? 'opacity-40 cursor-not-allowed border-[#1a281e] bg-[#0a1a0f]/30' :
       color === 'green' ? 'border-[#c5f82a]/30 bg-[#c5f82a]/5 hover:bg-[#c5f82a]/15 hover:border-[#c5f82a]/60 hover:shadow-[0_0_20px_rgba(197,248,42,0.15)]' :
@@ -37,7 +38,7 @@ const ActionButton = ({ icon: Icon, label, sublabel, color, onClick, disabled })
       color === 'blue'  ? 'text-blue-400' :
       color === 'orange'? 'text-orange-400' : 'text-red-400'
     } />
-    <div className="text-center">
+    <div className="text-center" aria-hidden="true">
       <div className="text-xs font-bold text-gray-200">{label}</div>
       {sublabel && <div className="text-[9px] text-gray-500 mt-0.5 uppercase tracking-wider">{sublabel}</div>}
     </div>
@@ -163,7 +164,11 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
         <div className="w-80 shrink-0 border-r border-[#1a281e] flex flex-col bg-[#060c08]/80 backdrop-blur-xl">
           {/* Header */}
           <div className="p-6 border-b border-[#1a281e]">
-            <button onClick={onClose} className="flex items-center gap-2 text-gray-500 hover:text-[#c5f82a] transition-colors text-xs font-bold uppercase tracking-widest mb-6 group">
+            <button 
+              onClick={onClose} 
+              aria-label="Back to escalation queue"
+              className="flex items-center gap-2 text-gray-500 hover:text-[#c5f82a] transition-colors text-xs font-bold uppercase tracking-widest mb-6 group"
+            >
               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
               Back to Queue
             </button>
@@ -247,7 +252,11 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                   {actionTaken} SENT
                 </div>
               )}
-              <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-colors">
+              <button 
+                onClick={onClose} 
+                aria-label="Close workspace"
+                className="p-2 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-colors"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -281,7 +290,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                   <div className="text-gray-600"># LangGraph Agent Trace</div>
                   <div><span className="text-blue-400">[intent_summary]</span> High frustration signal. Network reliability driver detected.</div>
                   <div><span className="text-orange-400">[classifier]</span> XGBoost score: <span className="text-[#c5f82a]">{(churnRisk * 100).toFixed(0)}%</span> · Driver: QUALITY</div>
-                  <div><span className="text-purple-400">[rag]</span> Retrieved: "Priority support + network diagnostics playbook"</div>
+                  <div><span className="text-cyan-400">[rag]</span> Retrieved: "Priority support + network diagnostics playbook"</div>
                   <div><span className="text-[#c5f82a]">[digital_twin_sim]</span> Iteration 1: rejected · Iteration 2: rejected</div>
                   <div><span className="text-red-400">[business_rules]</span> FAIL · Confidence {`<`} 0.5 · Iterations ≥ 3</div>
                   <div><span className="text-red-400">[human_handoff]</span> Escalated. Awaiting specialist intervention.</div>
@@ -294,10 +303,12 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
               <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">Case Notes</div>
               <div className="flex gap-3">
                 <textarea
+                  id="case-note"
                   value={note}
                   onChange={e => setNote(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && e.ctrlKey && addNote()}
                   placeholder="Add a case note... (Ctrl+Enter to submit)"
+                  aria-label="Add case note"
                   className="flex-1 bg-[#060c08] border border-[#1a281e] focus:border-[#c5f82a]/50 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none transition-colors min-h-[80px]"
                 />
                 <button

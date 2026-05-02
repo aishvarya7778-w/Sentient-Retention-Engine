@@ -8,7 +8,7 @@ from ..models import RetentionStrategy
 llm, LLM_AVAILABLE = get_llm()
 
 def node_rag(state: RetentionState) -> Dict[str, Any]:
-    print(f"[NODE] 3: Knowledge Retrieval (Driver: {state.get('driver')})")
+    print(f"[NODE] 3: Knowledge Fetching (Driver: {state.get('driver')})")
     driver = state.get('driver', 'UNKNOWN')
     if driver == "QUALITY":
         rag_context = "Playbook: For quality issues, offer network-self-heal diagnostics and priority support."
@@ -70,7 +70,7 @@ def node_strategist(state: RetentionState) -> Dict[str, Any]:
                 "message": strategy.message,
                 "confidence": strategy.confidence,
                 "bundle_details": strategy.bundle_details,
-                "eval_reasoning": f"Strategist selected {strategy.final_action} based on simulation results."
+                "assessment_reasoning": f"Strategist selected {strategy.final_action} based on simulation results."
             }
         except Exception as e:
             print(f"Strategist failed: {e}, using fallback")
@@ -82,7 +82,7 @@ def node_strategist(state: RetentionState) -> Dict[str, Any]:
         "message": f"Hello, we've reviewed your account. To show our appreciation, we are offering you: {last_action}.",
         "confidence": 0.85,
         "bundle_details": "Selected based on previous interaction history.",
-        "eval_reasoning": "Fallback strategy applied due to LLM unavailability."
+        "assessment_reasoning": "Fallback strategy applied due to LLM unavailability."
     }
 
 def node_retention_offer_tool(state: RetentionState) -> Dict[str, Any]:

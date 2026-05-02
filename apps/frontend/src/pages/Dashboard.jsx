@@ -903,7 +903,6 @@ const Dashboard = ({ isAdminView = false }) => {
             }} 
           />
         )}
-      <style dangerouslySetInnerHTML={{__html: `.custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: transparent; } .custom-scrollbar::-webkit-scrollbar-thumb { background: #1a281e; border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #2a4230; }`}} />
     </div>
   </div>
 );

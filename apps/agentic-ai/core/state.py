@@ -38,7 +38,7 @@ class RetentionState(TypedDict):
     
     # Downstream LLM Eval Data
     success_probability: float
-    eval_reasoning: str
+    assessment_reasoning: str
     
     # 7. Strategist Output
     final_action: str

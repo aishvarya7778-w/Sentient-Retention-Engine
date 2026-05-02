@@ -46,7 +46,7 @@ def ingest_data():
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
-        print(f"Inserting {len(data)} rows...")
+        print(f"Processing {len(data)} records for database synchronization...")
         extras.execute_batch(cur, insert_query, data)
 
         conn.commit()

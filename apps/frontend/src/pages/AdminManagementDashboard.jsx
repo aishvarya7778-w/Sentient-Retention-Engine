@@ -329,10 +329,12 @@ const AdminManagementDashboard = () => {
               <div className="relative group">
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-[#c5f82a] transition-colors" />
                 <input 
+                  id="case-search"
                   type="text" 
                   placeholder="Search case or user ID..." 
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
+                  aria-label="Search escalations"
                   className="bg-[#0a110b] border border-[#1a281e] rounded-xl py-3 pl-12 pr-6 text-sm text-gray-300 w-64 focus:outline-none focus:border-[#c5f82a]/30 transition-all"
                 />
               </div>
@@ -341,6 +343,8 @@ const AdminManagementDashboard = () => {
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
+                aria-label="Toggle notifications"
+                aria-expanded={showNotifications}
                 className={`relative p-3 rounded-xl border border-[#1a281e] hover:bg-white/5 transition-colors ${showNotifications ? 'text-[#c5f82a] bg-[#c5f82a]/5 border-[#c5f82a]/20' : 'text-gray-400'}`}
               >
                 <Bell size={18} />
@@ -365,6 +369,7 @@ const AdminManagementDashboard = () => {
 
               <button 
                 onClick={() => setActiveSubTab('settings')}
+                aria-label="Admin settings"
                 className={`p-3 rounded-xl border border-[#1a281e] hover:bg-white/5 transition-colors ${activeSubTab === 'settings' ? 'text-[#c5f82a] bg-[#c5f82a]/5 border-[#c5f82a]/20' : 'text-gray-400'}`}
               >
                 <Settings size={18} />
@@ -374,12 +379,14 @@ const AdminManagementDashboard = () => {
             <div className="flex items-center gap-1 bg-[#0a110b] border border-[#1a281e] rounded-xl p-1">
               <button 
                 onClick={() => setViewMode('list')}
+                aria-label="Switch to list view"
                 className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-[#1a281e] text-[#c5f82a]' : 'text-gray-500 hover:text-gray-300'}`}
               >
                 <List size={18} />
               </button>
               <button 
                 onClick={() => setViewMode('grid')}
+                aria-label="Switch to grid view"
                 className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[#1a281e] text-[#c5f82a]' : 'text-gray-500 hover:text-gray-300'}`}
               >
                 <LayoutGrid size={18} />
@@ -387,6 +394,7 @@ const AdminManagementDashboard = () => {
             </div>
             <button 
               onClick={fetchEscalations}
+              aria-label="Refresh escalations"
               className="p-3 rounded-xl border border-[#1a281e] hover:bg-white/5 transition-colors text-gray-400"
             >
               <RefreshCcw size={18} className={isLoading ? 'animate-spin' : ''} />
@@ -404,7 +412,7 @@ const AdminManagementDashboard = () => {
                   <StatCard label="Live Escalations" value={pendingEscalations.length} trend="+2 new" trendColor="text-red-400" icon={AlertCircle} color="red" />
                   <StatCard label="Claimed by Me" value={claimedEscalations.length} trend="In Progress" trendColor="text-[#c5f82a]" icon={UserCheck} color="green" />
                   <StatCard label="Avg Risk Score" value="88%" trend="-2.4%" trendColor="text-green-400" icon={Activity} color="blue" />
-                  <StatCard label="SLA Compliance" value="94.2%" trend="+0.8%" trendColor="text-[#c5f82a]" icon={Clock} color="purple" />
+                  <StatCard label="SLA Compliance" value="94.2%" trend="+0.8%" trendColor="text-[#c5f82a]" icon={Clock} color="cyan" />
                 </div>
 
                 {/* Main List Section */}
@@ -416,8 +424,10 @@ const AdminManagementDashboard = () => {
                     </div>
                     <div className="flex items-center gap-4">
                       <select 
+                        id="priority-filter"
                         value={filterStatus}
                         onChange={e => setFilterStatus(e.target.value)}
+                        aria-label="Filter by priority"
                         className="bg-[#0a110b] border border-[#1a281e] rounded-lg text-xs font-bold text-gray-500 px-3 py-1.5 focus:outline-none focus:border-[#c5f82a]/30"
                       >
                         <option value="all">Priority: All</option>
@@ -507,7 +517,7 @@ const AdminManagementDashboard = () => {
                 <div className="grid grid-cols-3 gap-6">
                   <StatCard icon={Users} label="Active Specialists" value="12 Online" trend="+2" trendColor="text-[#c5f82a]" color="green" />
                   <StatCard icon={MessageSquare} label="Concurrent Chats" value="28" trend="High" trendColor="text-orange-400" color="blue" />
-                  <StatCard icon={Activity} label="Avg Sat Score" value="4.8/5" trend="+0.2" trendColor="text-[#c5f82a]" color="purple" />
+                  <StatCard icon={Activity} label="Avg Sat Score" value="4.8/5" trend="+0.2" trendColor="text-[#c5f82a]" color="cyan" />
                 </div>
                 
                 <div className="bg-[#0a110b] border border-[#1a281e] rounded-3xl overflow-hidden">
@@ -584,7 +594,7 @@ const AdminManagementDashboard = () => {
                     <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">API QPS</div>
                     <div className="text-3xl font-bold text-white font-mono">{healthData?.qps || '850/m'}</div>
                     <div className="mt-4 h-1.5 w-full bg-[#1a281e] rounded-full overflow-hidden">
-                      <div className="h-full bg-purple-500 w-[40%]" />
+                      <div className="h-full bg-cyan-500 w-[40%]" />
                     </div>
                   </div>
                   <div className="bg-[#0a110b] border border-[#1a281e] p-6 rounded-3xl">
@@ -695,15 +705,15 @@ const AdminManagementDashboard = () => {
                     <h3 className="text-lg font-bold text-white mb-6">Pipeline Thresholds</h3>
                     <div className="space-y-6">
                       <div className="flex flex-col gap-2">
-                        <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Escalation Risk Score Threshold</label>
+                        <label htmlFor="risk-threshold" className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Escalation Risk Score Threshold</label>
                         <div className="flex items-center gap-4">
-                          <input type="range" className="flex-1 accent-[#c5f82a]" />
+                          <input id="risk-threshold" type="range" className="flex-1 accent-[#c5f82a]" />
                           <span className="text-sm font-mono text-[#c5f82a]">85%</span>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <label className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Auto-Handoff Delay (ms)</label>
-                        <input type="number" defaultValue={500} className="bg-[#060c08] border border-[#1a281e] p-3 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-[#c5f82a]/50" />
+                        <label htmlFor="handoff-delay" className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Auto-Handoff Delay (ms)</label>
+                        <input id="handoff-delay" type="number" defaultValue={500} className="bg-[#060c08] border border-[#1a281e] p-3 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-[#c5f82a]/50" />
                       </div>
                     </div>
                   </div>
@@ -778,6 +788,7 @@ const AdminManagementDashboard = () => {
 const NavItem = ({ icon: Icon, label, active, onClick }) => (
   <button 
     onClick={onClick}
+    aria-current={active ? 'page' : undefined}
     className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${
       active ? 'bg-[#c5f82a]/10 text-[#c5f82a]' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
     }`}

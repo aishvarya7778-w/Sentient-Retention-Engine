@@ -62,7 +62,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     for node_name, state_update in event.items():
                         # Skip internal or empty updates
                         if not state_update or not isinstance(state_update, dict):
-                            print(f"DEBUG: Skipping update for {node_name}: {state_update}")
+                            print(f"DEBUG: Skipping event for {node_name}: {state_update}")
                             continue
 
                         if node_name.startswith("__"):
@@ -73,7 +73,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                         try:
                             # Prepare data for frontend mapping
                             reasoning = (
-                                state_update.get("eval_reasoning") or 
+                                state_update.get("assessment_reasoning") or 
                                 state_update.get("message") or 
                                 state_update.get("summary") or 
                                 f"Processed in {node_name}"
@@ -102,13 +102,13 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                             msg["timestamp"] = datetime.now().strftime("%H:%M:%S")
                             
                             # Add some helpful fields if they are missing
-                            if "reasoning" not in msg and "eval_reasoning" in msg:
-                                msg["reasoning"] = msg["eval_reasoning"]
+                            if "reasoning" not in msg and "assessment_reasoning" in msg:
+                                msg["reasoning"] = msg["assessment_reasoning"]
                             
                             await websocket.send_json(msg)
                             await asyncio.sleep(0.5) # Pace for visualization
                         except Exception as node_err:
-                            print(f"Error processing node update for {node_name}: {node_err}")
+                            print(f"Error processing node event for {node_name}: {node_err}")
                             continue
                 
                 # Signal completion

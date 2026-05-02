@@ -314,13 +314,16 @@ export const AuditLogTable = ({ logs: auditLogs = [], searchTerm = '', onSearch 
         <div className="text-sm font-bold text-gray-200 uppercase tracking-widest">Global Audit Log</div>
         <div className="relative">
           <input 
+            id="audit-log-search"
             type="text" 
             value={searchTerm}
             onChange={(e) => onSearch(e.target.value)}
             placeholder="Search Customers or Events..." 
+            aria-label="Search audit logs"
             className="bg-[#040805] border border-[#2a4230] rounded-full pl-8 pr-4 py-1.5 text-xs text-gray-300 focus:outline-none focus:border-[#c5f82a] transition-colors w-64" 
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+            <label htmlFor="audit-log-search" className="sr-only">Search audit logs</label>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </div>
         </div>
