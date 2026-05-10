@@ -1,7 +1,7 @@
 from typing import Dict, Any, List, TypedDict, Optional
 
 class RetentionState(TypedDict):
-    # 1. Input Node Data
+    # 1. Base Input Data
     customer_id: str
     plan_tier: str
     usage_last_30d: float
@@ -11,49 +11,49 @@ class RetentionState(TypedDict):
     last_login: str
     payment_status: str
     
-    # 2. Intent Summary Data
-    summary: str
-    likely_frustration: str
-    signal_strength: str
+    # 2. RiskAnalysisAgent Output
+    risk_level: str  # CRITICAL, HIGH, MEDIUM, LOW
+    risk_score: float
+    primary_drivers: List[str]
     
-    # 3. XGBoost Classifier Data
-    churn_score: float
-    driver: str # PRICE, QUALITY, CONTENT, UNKNOWN
-    shap_features: List[str]
-    
-    # 4. RAG Data
+    # 3. StrategyPlanningAgent Output
+    strategy_candidates: List[Dict[str, Any]]
     rag_context: str
     
-    # 5. Routing State
-    risk_lane: str # HIGH or LOW
+    # 4. SimulationAgent Output
+    simulation_results: List[Dict[str, Any]]
+    engagement_score_forecast: float
+    clv_impact: float
     
-    # 6. Loop & Simulation Data (High & Low Risk Lanes)
-    simulation_iterations: int
-    offers_tried: List[str]
-    strategies_tried: List[str]
-    responses: List[str]
-    nps_scores: List[float]
-    engagement_score: float
-    clv: float
+    # 5. DecisionAgent Output
+    selected_strategy: Dict[str, Any]
+    decision_confidence: float
+    decision_reasoning: str
     
-    # Downstream LLM Eval Data
-    success_probability: float
-    assessment_reasoning: str
+    # 6. GovernanceEngine Output
+    governance_report: Dict[str, Any]
+    validation_passed: bool
+    policy_violations: List[str]
+    roi_check: bool
     
-    # 7. Strategist Output
+    # 7. ActionGenerationAgent Output
     final_action: str
     message: str
     bundle_details: str
-    confidence: float
-    
-    # 8. Business Rules & Guardrails
-    escalated_to_human: bool
-    business_rules_passed: bool
-    evaluation_passed: bool
-    technical_failure: bool
-    
-    # 9. Output & Audit
-    raw_customer_data: Optional[Dict[str, Any]]
     output_payload: Dict[str, Any]
+    
+    # 8. HumanHandoffAgent State
+    escalated_to_human: bool
+    escalation_reason: str
+    human_status: str  # PENDING, CLAIMED, RESOLVED
+    specialist_notes: Optional[str]
+    
+    # 9. Observability & Learning
+    agent_telemetry: List[Dict[str, Any]]  # Granular events for the dashboard
+    feedback_metrics: Optional[Dict[str, Any]]
     audit_log: List[Dict[str, Any]]
+    
+    # Execution Metadata
+    technical_failure: bool
     loop_count: int
+    raw_customer_data: Optional[Dict[str, Any]]

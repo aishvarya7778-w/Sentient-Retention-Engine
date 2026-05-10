@@ -13,7 +13,7 @@ import LiveAnalyticsSection from '../components/dashboard/LiveAnalyticsSection';
 import {
   KPICard, DonutChart, BarChart, Heatmap, ModelCard, FeatureImportance,
   EscalationCard, EscalationDetailsModal, ChainOfThoughtTerminal, AuditLogTable,
-  ActivityKPICard, LiveEventCard, WorkflowChainOverlay
+  ActivityKPICard, LiveEventCard, WorkflowChainOverlay, CompactAestheticBranding
 } from '../components/dashboard/DashboardComponents';
 
 const Dashboard = ({ isAdminView = false }) => {
@@ -300,7 +300,9 @@ const Dashboard = ({ isAdminView = false }) => {
       
       <div className={`flex w-full h-full relative z-10 transition-all duration-500 ${isFullView ? 'p-0' : 'p-4 md:p-6 lg:p-8'}`}>
         <div className="w-20 flex flex-col items-center pt-4 shrink-0 animate-in fade-in slide-in-from-left-4 duration-500 border-r border-cyber-border bg-cyber-black z-20">
-          <Link to="/" className="text-cyber-primary font-black text-2xl tracking-tighter mb-10 hover:opacity-80 transition-opacity font-display">SRE</Link>
+          <Link to="/" className="mb-10 hover:opacity-80 transition-opacity">
+            <CompactAestheticBranding />
+          </Link>
           <div className="flex flex-col gap-6 items-center">
             {navItems.map((item) => {
               const Icon = item.icon;

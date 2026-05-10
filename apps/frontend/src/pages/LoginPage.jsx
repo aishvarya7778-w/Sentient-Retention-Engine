@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, User, ShieldCheck, Activity, ArrowRight, Fingerprint, Terminal } from 'lucide-react';
+import { BrandLogo, HeroBranding } from '../components/dashboard/DashboardComponents';
+import { Lock, User, ShieldCheck, Activity, ArrowRight, Fingerprint, Terminal, Shield } from 'lucide-react';
 import config from '../config';
 
 const LoginPage = () => {
@@ -65,24 +66,42 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#050805] flex items-center justify-center p-6 font-sans relative overflow-hidden">
-      {/* Background elements optimized for speed */}
-      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(#c5f82a 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+    <div className="min-h-screen bg-[#050805] flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+      {/* Background HUD elements */}
+      <div className="hud-grid opacity-40"></div>
+      <div className="hud-scanline"></div>
       <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#c5f82a]/5 rounded-full blur-[120px] pointer-events-none"></div>
       
-      <div className="w-full max-w-md relative animate-in fade-in zoom-in-95 duration-300">
-        {/* Security Badge */}
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
-            <div className="bg-[#0f1712] border border-[#c5f82a]/30 p-3 rounded-2xl shadow-2xl backdrop-blur-xl">
-                <Fingerprint size={24} className="text-[#c5f82a]" />
-            </div>
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-12 lg:gap-20 relative animate-in fade-in zoom-in-95 duration-700">
+        
+        {/* Left Side: Detailed Branding */}
+        <div className="flex-1 hidden lg:block animate-in slide-in-from-left-8 duration-1000">
+          <HeroBranding />
         </div>
 
-        <div className="bg-[#0f1712]/90 backdrop-blur-3xl border border-[#1a281e] rounded-[32px] p-10 shadow-2xl">
-          <div className="text-center mb-8 pt-2">
-            <h1 className="text-2xl font-black text-white tracking-tighter mb-1 uppercase">Sentient <span className="text-[#c5f82a]">Specialist</span></h1>
-            <p className="text-gray-500 text-[9px] font-bold uppercase tracking-[0.2em] opacity-60">Retention Core Access</p>
+        {/* Right Side: Login Card */}
+        <div className="w-full max-w-md relative">
+          {/* Mobile Hero Branding (Visible only on small screens) */}
+          <div className="lg:hidden mb-16 animate-in slide-in-from-top-4 duration-700">
+            <HeroBranding />
           </div>
+
+          {/* Security Badge */}
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
+              <div className="bg-[#0f1712] border border-[#c5f82a]/30 p-3 rounded-2xl shadow-2xl backdrop-blur-xl group cursor-help">
+                  <Fingerprint size={24} className="text-[#c5f82a] group-hover:scale-110 transition-transform duration-500" />
+              </div>
+          </div>
+
+          <div className="bg-[#0f1712]/90 backdrop-blur-3xl border border-[#1a281e] rounded-[32px] p-10 shadow-[0_40px_100px_rgba(0,0,0,0.6)] relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+              <Shield size={120} className="text-white" />
+            </div>
+
+            <div className="text-center mb-10 pt-2 border-b border-white/5 pb-6">
+              <h2 className="text-2xl font-display text-white tracking-widest uppercase mb-1">Access Portal</h2>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Neural Link Verification Required</p>
+            </div>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-[10px] font-bold mb-6 flex items-center gap-3">
@@ -155,6 +174,7 @@ const LoginPage = () => {
               <span className="text-[8px] text-gray-700 font-mono">AUTH_V2</span>
               <span className="text-[8px] text-gray-700 font-mono">TLS_1.3</span>
             </div>
+          </div>
           </div>
         </div>
       </div>

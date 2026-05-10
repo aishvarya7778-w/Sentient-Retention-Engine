@@ -1,111 +1,106 @@
 import json
-from typing import Dict, Any
+import time
+from typing import Dict, Any, List
 from langchain_core.messages import HumanMessage, SystemMessage
 from ..state import RetentionState
 from ..llm_provider import get_llm
 from ..models import RetentionStrategy
+from .utils import emit_telemetry
 
 llm, LLM_AVAILABLE = get_llm()
 
-def node_rag(state: RetentionState) -> Dict[str, Any]:
-    print(f"[NODE] 3: Knowledge Fetching (Driver: {state.get('driver')})")
-    driver = state.get('driver', 'UNKNOWN')
-    if driver == "QUALITY":
-        rag_context = "Playbook: For quality issues, offer network-self-heal diagnostics and priority support."
-    elif driver == "PRICE":
-        rag_context = "Playbook: For price sensitivity, offer 20% discount on next 3 billing cycles."
-    else:
-        rag_context = "Playbook: General retention strategies."
-        
-    return {"rag_context": rag_context}
+def node_strategy_planning(state: RetentionState) -> Dict[str, Any]:
+    """
+    [Agent 2: StrategyPlanningAgent]
+    Purpose: Generate high-level candidate strategies based on risk drivers.
+    """
+    risk_level = state.get("risk_level", "MEDIUM")
+    drivers = state.get("primary_drivers", ["GENERAL_CHURN_RISK"])
+    emit_telemetry(state, "StrategyPlanningAgent", "STRATEGY_GENERATION_STARTED", 
+                   f"Planning strategies for {risk_level} risk due to {', '.join(drivers)}")
 
-def node_strategist(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 11: Strategist (LLM: GPT-4o)")
+    # RAG Grounding
+    # Strategy Selection Matrix from User Doc
+    candidates = []
+    if "USAGE_DECLINE" in drivers:
+        candidates.append({
+            "strategy_id": "ST-USAGE",
+            "name": "Feature Enablement Trial",
+            "details": "Premium trial for 3 months to increase engagement via new features.",
+            "roi_estimate": 1.45
+        })
+    if "BILLING_ISSUE" in drivers:
+        candidates.append({
+            "strategy_id": "ST-BILLING",
+            "name": "Billing Grace Period",
+            "details": "Waive late fees and offer flexible payment plan.",
+            "roi_estimate": 1.25
+        })
+    if "SUPPORT_FRICTION" in drivers:
+        candidates.append({
+            "strategy_id": "ST-SUPPORT",
+            "name": "Priority Specialist Support",
+            "details": "Direct line to senior support specialist + priority queue.",
+            "roi_estimate": 1.35
+        })
+    if risk_level == "CRITICAL":
+        candidates.append({
+            "strategy_id": "ST-CRITICAL",
+            "name": "VIP Concierge Discount",
+            "details": "Dedicated account manager + 20% loyalty discount.",
+            "roi_estimate": 1.65
+        })
     
-    # Try to get GPT-4o, fallback to default LLM if not available
-    strategist_llm, available = get_llm("openai")
-    if not available:
-        strategist_llm, available = get_llm("groq")
+    if not candidates:
+        candidates.append({
+            "strategy_id": "ST-DEFAULT",
+            "name": "Loyalty Appreciation",
+            "details": "Standard 10% discount for continued service.",
+            "roi_estimate": 1.15
+        })
 
-    # Aggregate simulation results (memory store)
-    offers = state.get('offers_tried', [])
-    strategies = state.get('strategies_tried', [])
-    responses = state.get('responses', [])
-    nps_scores = state.get('nps_scores', [])
+    emit_telemetry(state, "StrategyPlanningAgent", "CANDIDATES_GENERATED", 
+                   f"Generated {len(candidates)} candidate strategies.")
     
-    simulation_results = []
-    for i in range(len(responses)):
-        res = {
-            "action": offers[i] if i < len(offers) else (strategies[i-len(offers)] if i-len(offers) < len(strategies) else "Unknown"),
-            "user_reaction": responses[i],
-            "nps_impact": nps_scores[i] if i < len(nps_scores) else "N/A"
-        }
-        simulation_results.append(res)
-
-    if available:
-        try:
-            structured_llm = strategist_llm.with_structured_output(RetentionStrategy)
-            
-            prompt = f"""You are the Retention Strategist. From the simulation results, select the single best action. 
-            Write a personalized retention message for this customer.
-            
-            Customer Context:
-            - ID: {state.get('customer_id')}
-            - Plan: {state.get('plan_tier')}
-            - Churn Score: {state.get('churn_score')}
-            - Primary Driver: {state.get('driver')}
-            
-            Playbook Grounding (RAG):
-            {state.get('rag_context')}
-            
-            Simulation History (Memory Store):
-            {json.dumps(simulation_results, indent=2)}
-            
-            Select the best performing action and compose the final output.
-            """
-            
-            strategy = structured_llm.invoke(prompt)
-            return {
-                "final_action": strategy.final_action,
-                "message": strategy.message,
-                "confidence": strategy.confidence,
-                "bundle_details": strategy.bundle_details,
-                "assessment_reasoning": f"Strategist selected {strategy.final_action} based on simulation results."
-            }
-        except Exception as e:
-            print(f"Strategist failed: {e}, using fallback")
-            
-    # Robust fallback
-    last_action = offers[-1] if offers else (strategies[-1] if strategies else "Standard Bundle")
     return {
-        "final_action": last_action,
-        "message": f"Hello, we've reviewed your account. To show our appreciation, we are offering you: {last_action}.",
-        "confidence": 0.85,
-        "bundle_details": "Selected based on previous interaction history.",
-        "assessment_reasoning": "Fallback strategy applied due to LLM unavailability."
+        "strategy_candidates": candidates,
+        "agent_telemetry": state.get("agent_telemetry", [])
     }
 
-def node_retention_offer_tool(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 7a: Retention Offer API Tool")
-    driver = state.get('driver', 'PRICE')
+def node_decision(state: RetentionState) -> Dict[str, Any]:
+    """
+    [Agent 4: DecisionAgent]
+    Purpose: Ranks and selects the optimal strategy based on simulation outcomes.
+    """
+    emit_telemetry(state, "DecisionAgent", "DECISION_STARTED", "Selecting optimal strategy based on simulations.")
     
-    if driver == "PRICE":
-        offer = f"20% Discount (Attempt {state.get('simulation_iterations')})"
-    elif driver == "QUALITY":
-        offer = f"Network Priority Pass (Attempt {state.get('simulation_iterations')})"
+    sim_results = state.get("simulation_results", [])
+    candidates = state.get("strategy_candidates", [])
+    
+    if not sim_results:
+        # If no simulation happened, pick the one with highest ROI estimate
+        selected = max(candidates, key=lambda x: x.get("roi_estimate", 0))
+        reasoning = "Selected based on initial ROI estimate (No simulation data available)."
+        confidence = 0.65 # Lower confidence without simulation
     else:
-        offer = f"Standard Bundle (Attempt {state.get('simulation_iterations')})"
-        
-    offers = state.get('offers_tried', [])
-    offers.append(offer)
-    return {"offers_tried": offers}
-
-def node_engagement_api(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 7b: Engagement API Tool")
-    strategies = ["Loyalty bonus", "Content recommendation", "Plan upgrade nudge"]
-    idx = (state.get('simulation_iterations', 1) - 1) % len(strategies)
-    strat = strategies[idx]
+        # User's Decision Logic: score = (roi * 0.4) + (confidence * 0.6)
+        def calculate_score(s):
+            roi = s.get("roi_estimate", 0)
+            conf = s.get("success_probability", 0)
+            return (roi * 0.4) + (conf * 0.6)
+            
+        selected = max(sim_results, key=calculate_score)
+        confidence = selected.get("success_probability", 0)
+        score = calculate_score(selected)
+        reasoning = f"Selected {selected.get('name')} with weighted score {score:.2f} (ROI: {selected.get('roi_estimate')}, Conf: {confidence:.2f})"
     
-    strats = state.get('strategies_tried', [])
-    strats.append(strat)
-    return {"strategies_tried": strats}
+    emit_telemetry(state, "DecisionAgent", "DECISION_COMPLETED", 
+                   f"Strategy Selected: {selected.get('name')}", 
+                   {"confidence": confidence, "reasoning": reasoning})
+    
+    return {
+        "selected_strategy": selected,
+        "decision_confidence": confidence,
+        "decision_reasoning": reasoning,
+        "agent_telemetry": state.get("agent_telemetry", [])
+    }

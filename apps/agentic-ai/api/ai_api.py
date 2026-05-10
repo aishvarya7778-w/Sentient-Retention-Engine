@@ -38,7 +38,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             if payload.get("action") == "start_pipeline":
                 print(f"Starting pipeline for user: {user_id}")
 
-                # Initialize state based on RetentionState definition
+                # Initialize state based on the new 9-agent RetentionState definition
                 initial_state = {
                     "customer_id": user_id,
                     "plan_tier": payload.get("plan_tier", "Gold"),
@@ -46,23 +46,22 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     "support_ticket_count": int(payload.get("complaints_count", 0)),
                     "network_drop_events": int(payload.get("network_drops", 0)),
                     "payment_status": payload.get("payment_status", "Paid"),
+                    "billing_history": "Standard billing cycle",
+                    "last_login": datetime.now().isoformat(),
                     "simulation_iterations": 0,
-                    "offers_tried": [],
-                    "strategies_tried": [],
-                    "responses": [],
-                    "nps_scores": [],
-                    "audit_log": []
+                    "agent_telemetry": [],
+                    "audit_log": [],
+                    "technical_failure": False,
+                    "loop_count": 0,
+                    "escalated_to_human": False
                 }
                 
                 await websocket.send_json({"type": "status", "message": "Pipeline Started", "node": "START"})
                 
-                # We iterate over the stream
+                # Iterate over the graph stream
                 async for event in retention_graph.astream(initial_state):
-                    # event is a dict: {node_name: state_update}
                     for node_name, state_update in event.items():
-                        # Skip internal or empty updates
                         if not state_update or not isinstance(state_update, dict):
-                            print(f"DEBUG: Skipping event for {node_name}: {state_update}")
                             continue
 
                         if node_name.startswith("__"):
@@ -71,42 +70,48 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                         print(f"Node Completed: {node_name}")
                         
                         try:
-                            # Prepare data for frontend mapping
-                            reasoning = (
-                                state_update.get("assessment_reasoning") or 
-                                state_update.get("message") or 
-                                state_update.get("summary") or 
-                                f"Processed in {node_name}"
-                            )
-                            
+                            # Prepare rich data for the 9-agent dashboard visualization
                             msg = {
                                 "type": "node_update",
                                 "node": node_name,
                                 "status": "Completed",
+                                "timestamp": datetime.now().strftime("%H:%M:%S"),
                                 "data": {
-                                    "risk_score": state_update.get("churn_score"),
-                                    "driver": state_update.get("driver"),
+                                    "risk_score": state_update.get("risk_score"),
+                                    "risk_level": state_update.get("risk_level"),
+                                    "drivers": state_update.get("primary_drivers"),
+                                    "candidates": state_update.get("strategy_candidates"),
+                                    "selected": state_update.get("selected_strategy"),
+                                    "confidence": state_update.get("decision_confidence"),
+                                    "reasoning": (
+                                        state_update.get("decision_reasoning") or 
+                                        state_update.get("escalation_reason") or
+                                        state_update.get("message") or
+                                        f"Processed in {node_name}"
+                                    ),
+                                    "validation": state_update.get("validation_passed"),
                                     "action": state_update.get("final_action"),
-                                    "offer": state_update.get("offers_tried")[-1] if state_update.get("offers_tried") else None,
-                                    "message": state_update.get("message"),
-                                    "reasoning": reasoning
+                                    "telemetry": state_update.get("agent_telemetry", [])[-1] if state_update.get("agent_telemetry") else None
                                 }
                             }
                             # Clean up None values
                             msg["data"] = {k: v for k, v in msg["data"].items() if v is not None}
                             
-                            # Use the node_name from the outer loop, don't override it
-                            msg["node_id"] = node_name
-                            msg["type"] = "node_update"
-                            msg["status"] = "Active"
-                            msg["timestamp"] = datetime.now().strftime("%H:%M:%S")
-                            
-                            # Add some helpful fields if they are missing
-                            if "reasoning" not in msg and "assessment_reasoning" in msg:
-                                msg["reasoning"] = msg["assessment_reasoning"]
-                            
                             await websocket.send_json(msg)
-                            await asyncio.sleep(0.5) # Pace for visualization
+                            
+                            # If a telemetry event was just emitted, send it as a dedicated event too
+                            if state_update.get("agent_telemetry"):
+                                last_event = state_update["agent_telemetry"][-1]
+                                await websocket.send_json({
+                                    "type": "AGENT_TELEMETRY",
+                                    "agent": last_event.get("agent"),
+                                    "event": last_event.get("event"),
+                                    "message": last_event.get("message"),
+                                    "metadata": last_event.get("metadata"),
+                                    "timestamp": last_event.get("timestamp")
+                                })
+                                
+                            await asyncio.sleep(0.6) # Slightly slower pace for human readability
                         except Exception as node_err:
                             print(f"Error processing node event for {node_name}: {node_err}")
                             continue

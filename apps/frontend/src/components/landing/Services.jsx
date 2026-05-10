@@ -15,7 +15,7 @@ export const Services = () => {
       <div className="grid md:grid-cols-12 gap-10">
         <div className="md:col-span-4">
           <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-4">[03] — Capabilities</div>
-          <h2 className="font-display text-5xl md:text-7xl leading-[0.9] sticky top-32">
+          <h2 className="font-display text-4xl md:text-6xl leading-[0.9] sticky top-32">
             One engine. <span className="italic-serif text-iris">Every</span> retention surface.
           </h2>
         </div>
@@ -30,7 +30,7 @@ export const Services = () => {
               style={{ background: active === i ? "linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.03))" : "transparent" }}
             >
               <span className="col-span-2 font-mono text-xs text-muted-foreground">{s.n}</span>
-              <h3 className="col-span-10 md:col-span-4 font-display text-3xl md:text-5xl transition-transform duration-500" style={{ transform: active === i ? "translateX(12px)" : "translateX(0)" }}>
+              <h3 className="col-span-10 md:col-span-4 font-display text-2xl md:text-4xl transition-transform duration-500" style={{ transform: active === i ? "translateX(12px)" : "translateX(0)" }}>
                 {s.t}
               </h3>
               <p className="col-start-3 md:col-start-7 col-span-10 md:col-span-6 text-sm md:text-base text-muted-foreground">

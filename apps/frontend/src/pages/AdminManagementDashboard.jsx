@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useDashboardData } from '../hooks/useDashboardData';
 import SpecialistDashboard from './SpecialistDashboard';
+import { BrandLogo } from '../components/dashboard/DashboardComponents';
 import config from '../config';
 import apiClient from '../services/apiClient';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -199,16 +200,8 @@ const AdminManagementDashboard = () => {
       <aside className="fixed left-0 top-0 w-64 h-screen border-r border-[#1a281e] bg-[#09110b] flex flex-col z-50 overflow-hidden">
         <div className="flex flex-col h-full overflow-y-auto no-scrollbar">
           {/* Header */}
-          <div className="p-8 border-b border-[#1a281e] shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#c5f82a] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(197,248,42,0.2)]">
-                <Shield size={20} className="text-[#0a110b]" />
-              </div>
-              <div>
-                <div className="text-[10px] font-bold text-[#c5f82a] uppercase tracking-[0.2em] font-display">Sentient</div>
-                <div className="text-lg font-bold text-white tracking-tight font-display">Admin Ops</div>
-              </div>
-            </div>
+          <div className="px-6 py-10 border-b border-[#1a281e] shrink-0">
+            <BrandLogo isSidebar />
           </div>
 
           {/* Navigation - Scrollable part */}
@@ -840,6 +833,7 @@ const StatCard = ({ label, value, trend, trendColor, icon: Icon, color }) => {
 
 const EscalationItem = ({ esc, mode, onClaim }) => {
   const isHighRisk = esc.churn_risk > 0.85;
+  const isGovernance = !!esc.metadata?.governance_data;
 
   if (mode === 'grid') {
     return (
@@ -848,17 +842,25 @@ const EscalationItem = ({ esc, mode, onClaim }) => {
         <div className="flex justify-between items-start mb-6 relative z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#1a281e] rounded-xl flex items-center justify-center border border-white/5 shadow-inner">
-              <Activity size={20} className={isHighRisk ? 'text-red-400' : 'text-orange-400'} />
+              <Activity size={20} className={isGovernance ? 'text-[#c5f82a]' : isHighRisk ? 'text-red-400' : 'text-orange-400'} />
             </div>
             <div>
               <div className="text-base font-bold text-white font-display tracking-tight leading-none mb-1">{esc.user_id}</div>
               <div className="text-[10px] text-white/40 font-mono tracking-wider font-medium uppercase">Reference: {esc.id?.slice(-8) || 'UNSYNCED'}</div>
             </div>
           </div>
-          <div className={`text-xs font-bold px-2.5 py-1 rounded-lg border uppercase tracking-[0.1em] font-display ${
-            isHighRisk ? 'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.1)]'
-          }`}>
-            {(esc.churn_risk * 100).toFixed(0)}% Risk
+          <div className="flex flex-col items-end gap-2">
+            <div className={`text-xs font-bold px-2.5 py-1 rounded-lg border uppercase tracking-[0.1em] font-display ${
+              isHighRisk ? 'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : 'bg-orange-500/10 text-orange-400 border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.1)]'
+            }`}>
+              {(esc.churn_risk * 100).toFixed(0)}% Risk
+            </div>
+            {isGovernance && (
+              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#c5f82a]/10 border border-[#c5f82a]/20 rounded text-[8px] font-bold text-[#c5f82a] uppercase tracking-widest font-display">
+                <Shield size={8} />
+                Governance Fault
+              </div>
+            )}
           </div>
         </div>
 
@@ -881,10 +883,13 @@ const EscalationItem = ({ esc, mode, onClaim }) => {
 
   return (
     <div className="bg-[#0a110b] border border-[#1a281e] p-5 rounded-2xl hover:border-[#c5f82a]/30 transition-all flex items-center gap-6 group">
-      <div className={`w-1 h-10 rounded-full ${isHighRisk ? 'bg-red-500' : 'bg-orange-500'} opacity-50 group-hover:opacity-100 transition-opacity`} />
+      <div className={`w-1 h-10 rounded-full ${isGovernance ? 'bg-[#c5f82a]' : isHighRisk ? 'bg-red-500' : 'bg-orange-500'} opacity-50 group-hover:opacity-100 transition-opacity`} />
       
       <div className="w-44">
-        <div className="text-xs font-bold text-white uppercase tracking-[0.1em] font-display">{esc.user_id}</div>
+        <div className="flex items-center gap-2">
+          <div className="text-xs font-bold text-white uppercase tracking-widest font-display">{esc.user_id}</div>
+          {isGovernance && <Shield size={10} className="text-[#c5f82a]" />}
+        </div>
         <div className="text-[10px] text-white/30 mt-0.5 font-mono tracking-tighter">{new Date(esc.executed_at).toLocaleTimeString()} • {new Date(esc.executed_at).toLocaleDateString()}</div>
       </div>
 

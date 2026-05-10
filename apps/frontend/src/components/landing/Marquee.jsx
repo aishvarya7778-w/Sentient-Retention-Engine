@@ -5,7 +5,7 @@ export const Marquee = () => {
     <section className="relative py-10 border-y border-faint overflow-hidden">
       <div className="flex whitespace-nowrap" style={{ animation: "marquee 35s linear infinite" }}>
         {row.map((w, i) => (
-          <span key={i} className={`font-display text-[12vw] md:text-[8vw] leading-none px-8 ${w === "★" ? "italic-serif text-iris" : ""}`}>
+          <span key={i} className={`font-display text-[8vw] md:text-[clamp(2rem,5vw,4.5rem)] leading-none px-8 ${w === "★" ? "italic-serif text-iris" : ""}`}>
             {w}
           </span>
         ))}

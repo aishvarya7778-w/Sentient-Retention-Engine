@@ -1,84 +1,34 @@
 import json
 import requests
-from typing import Dict, Any
+import time
+from typing import Dict, Any, List
 from langchain_core.messages import HumanMessage, SystemMessage
 from ..state import RetentionState
 from ..llm_provider import get_llm
 from ..database import fetch_customer_data
+from .utils import emit_telemetry
 
 llm, LLM_AVAILABLE = get_llm()
 
-def node_input(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 1: Input Triggered")
+def node_risk_analysis(state: RetentionState) -> Dict[str, Any]:
+    """
+    [Agent 1: RiskAnalysisAgent]
+    Purpose: Detect churn probability and identify primary behavioral drivers behind customer risk.
+    """
     customer_id = state.get("customer_id")
+    emit_telemetry(state, "RiskAnalysisAgent", "ANALYSIS_STARTED", f"Analyzing risk for customer {customer_id}")
     
-    # Fetch real data from DB
+    # 1. Fetch real data from DB
     real_data = fetch_customer_data(customer_id)
-    updates = {
-        "simulation_iterations": 0,
-        "offers_tried": [],
-        "strategies_tried": [],
-        "responses": [],
-        "nps_scores": [],
-        "audit_log": [],
-        "escalated_to_human": False,
-        "business_rules_passed": True,
-        "evaluation_passed": True,
-        "technical_failure": False,
-        "clv": 500.0,
-        "loop_count": 0
-    }
-    
-    if real_data:
-        print(f"Loaded real data for customer {customer_id}")
-        # Map DB fields to state fields
-        updates["plan_tier"] = real_data.get("contract", "Month-to-month")
-        updates["payment_status"] = "Paid" if real_data.get("churn") == "No" else "Overdue"
-        updates["monthly_charges"] = float(real_data.get("monthly_charges", 0))
-        # Store raw data for classifier
-        updates["raw_customer_data"] = real_data
-    
-    return updates
+    if not real_data:
+        emit_telemetry(state, "RiskAnalysisAgent", "DATA_ERROR", "Failed to fetch customer data", {"customer_id": customer_id})
+        return {"technical_failure": True}
 
-from ..models import ChurnAnalysis
-
-def node_intent_summary(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 2: Intent Summary")
+    # 2. Map Baseline Data
+    plan_tier = real_data.get("contract", "Month-to-month")
+    usage_drop = state.get("usage_last_30d", 0) # Simplified usage drop metric
     
-    if LLM_AVAILABLE:
-        try:
-            # Using structured output for reliability
-            structured_llm = llm.with_structured_output(dict) 
-            
-            prompt = f"""Analyze customer intent:
-            Customer ID: {state.get('customer_id')}
-            Plan: {state.get('plan_tier')}
-            Support Tickets: {state.get('support_ticket_count')}
-            Payment: {state.get('payment_status')}
-            Network Drops: {state.get('network_drop_events')}
-            """
-            
-            res = structured_llm.invoke(prompt)
-            return {
-                "summary": res.get("summary", "Summary unavailable"),
-                "likely_frustration": res.get("likely_frustration", "Unknown"),
-                "signal_strength": res.get("signal_strength", "Medium")
-            }
-        except Exception as e:
-            print(f"Structured output failed: {e}, using robust fallback")
-            
-    return {
-        "summary": "Customer is frustrated by repeated payment failures and poor network quality in their area.",
-        "likely_frustration": "Network reliability drops during peak hours.",
-        "signal_strength": "High"
-    }
-
-def node_classifier(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 4: XGBoost Classifier (Live API)")
-    customer_id = state.get("customer_id")
-    raw_data = state.get("raw_customer_data", {})
-    
-    # Prepare payload for ml-service
+    # 3. Call XGBoost ML Service for Churn Score
     payload = {
         "user_id": customer_id,
         "usage": state.get("usage_last_30d", 0),
@@ -86,38 +36,58 @@ def node_classifier(state: RetentionState) -> Dict[str, Any]:
         "payment_delay": 1 if state.get("payment_status") != "Paid" else 0
     }
     
-    # Add all raw data fields if available
-    if raw_data:
-        for k, v in raw_data.items():
-            if k not in payload:
-                # Convert numeric strings to float/int
-                if isinstance(v, str):
-                    try:
-                        if "." in v: payload[k] = float(v)
-                        else: payload[k] = int(v)
-                    except: payload[k] = v
-                else:
-                    payload[k] = v
-
     try:
         response = requests.post("http://127.0.0.1:8001/predict", json=payload, timeout=5)
-        if response.status_code == 200:
-            result = response.json()
-            churn_score = float(result.get("churn_risk", 0.5))
-            risk_level = result.get("risk_level", "MEDIUM")
-            print(f">>> XGBOOST PREDICTION: {churn_score} ({risk_level}) <<<")
-        else:
-            print(f"ML Service error: {response.status_code}")
-            churn_score = 0.5
-            risk_level = "MEDIUM"
+        churn_score = float(response.json().get("churn_risk", 0.5)) if response.status_code == 200 else 0.5
     except Exception as e:
-        print(f"Failed to call ML Service: {e}")
+        emit_telemetry(state, "RiskAnalysisAgent", "ML_ERROR", f"ML service call failed: {str(e)}")
         churn_score = 0.5
-        
-    driver = "QUALITY" if churn_score > 0.6 else "PRICE"
+
+    # 4. Apply User's Risk Level Logic
+    if churn_score > 0.85:
+        risk_level = "CRITICAL"
+    elif churn_score > 0.65:
+        risk_level = "HIGH"
+    elif churn_score > 0.40:
+        risk_level = "MEDIUM"
+    else:
+        risk_level = "LOW"
+
+    # 5. Apply User's Driver Detection Logic
+    primary_drivers = []
     
-    return {
-        "churn_score": churn_score,
-        "driver": driver,
-        "shap_features": ["network_drop_events", "support_ticket_count", "payment_status"]
+    # Logic from User: 
+    # if usage_drop > 40% -> USAGE_DECLINE
+    # if failed_payments >= 2 -> BILLING_ISSUE
+    # if unresolved_tickets > 3 -> SUPPORT_FRICTION
+    
+    usage_drop_pct = state.get("usage_drop_percentage", 0) # Assume this is passed in state
+    failed_payments = state.get("failed_payments_count", 0)
+    unresolved_tickets = state.get("support_ticket_count", 0)
+
+    if usage_drop_pct > 40:
+        primary_drivers.append("USAGE_DECLINE")
+    
+    if failed_payments >= 2:
+        primary_drivers.append("BILLING_ISSUE")
+        
+    if unresolved_tickets > 3:
+        primary_drivers.append("SUPPORT_FRICTION")
+    
+    if not primary_drivers:
+        primary_drivers.append("GENERAL_CHURN_RISK")
+
+    result = {
+        "risk_level": risk_level,
+        "risk_score": churn_score,
+        "primary_drivers": primary_drivers,
+        "plan_tier": plan_tier,
+        "raw_customer_data": real_data,
+        "agent_telemetry": state.get("agent_telemetry", [])
     }
+    
+    emit_telemetry(state, "RiskAnalysisAgent", "ANALYSIS_COMPLETED", 
+                   f"Risk Level: {risk_level} | Score: {churn_score:.2f}", 
+                   {"drivers": primary_drivers})
+    
+    return result

@@ -48,8 +48,9 @@ const retentionSchemas = {
     context: Joi.object()
   }),
   executeAction: Joi.object({
-    escalation_id: Joi.string().required(),
-    action_type: Joi.string().required(),
+    user_id: Joi.string().required(),
+    action: Joi.string().required(),
+    escalation_id: Joi.string().optional(),
     parameters: Joi.object()
   })
 };

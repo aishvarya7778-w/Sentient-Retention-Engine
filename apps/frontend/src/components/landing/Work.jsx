@@ -17,7 +17,7 @@ export const Pipeline = () => {
       <div className="flex justify-between items-end mb-20 flex-wrap gap-6">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-4">[02] — The Pipeline</div>
-          <h2 className="font-display text-6xl md:text-8xl leading-[0.9]">
+          <h2 className="font-display text-4xl md:text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.9]">
             Four stages, <span className="italic-serif text-iris">one</span> autonomous loop.
           </h2>
         </div>
@@ -49,19 +49,19 @@ const StageCard = ({ title, tags, latency, desc, img, index }) => {
   return (
     <div
       ref={ref}
-      className={`group ${index % 2 === 1 ? "md:mt-32" : ""}`}
+      className={`group ${index % 2 === 1 ? "md:mt-24" : ""}`}
       style={{ animation: visible ? `reveal-up 1s cubic-bezier(0.22,1,0.36,1) both` : undefined }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       data-cursor
     >
-      <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-card">
+      <div className="relative aspect-square overflow-hidden rounded-sm bg-card">
         <img
           src={img}
           alt={title}
           loading="lazy"
           width={1024}
-          height={1280}
+          height={1024}
           className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out"
           style={{ transform: hover ? "scale(1.08)" : "scale(1)" }}
         />
@@ -80,7 +80,7 @@ const StageCard = ({ title, tags, latency, desc, img, index }) => {
         </div>
       </div>
       <div className="mt-6 flex justify-between items-baseline gap-4">
-        <h3 className="font-display text-3xl md:text-4xl">{title}</h3>
+        <h3 className="font-display text-2xl md:text-3xl">{title}</h3>
         <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-iris whitespace-nowrap">{latency} avg</span>
       </div>
       <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">{tags}</div>

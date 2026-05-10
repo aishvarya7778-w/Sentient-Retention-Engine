@@ -18,6 +18,7 @@
   --text-dim: #A1A1AA; /* More neutral zinc-400 */
   --text-muted: #71717A; /* More neutral zinc-500 */
   --text-accent: #C5F82A;
+  --gradient-iris: linear-gradient(90deg, #C5F82A 0%, #00E0FF 100%);
 }
 
 @layer base {

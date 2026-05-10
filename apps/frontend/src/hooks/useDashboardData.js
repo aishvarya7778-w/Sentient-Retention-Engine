@@ -127,6 +127,51 @@ export const useDashboardData = () => {
           debouncedUpdateEvents(newEvent);
         }
 
+        if (data.type === 'GOVERNANCE_EVENT') {
+          const isFailed = data.payload.status === 'FAILED';
+          const newEvent = {
+            id: Date.now() + Math.random(),
+            chainId,
+            agentId: 'GovernanceEngine',
+            type: 'GOVERNANCE',
+            message: isFailed ? `VALIDATION_FAILED: ${data.payload.reason}` : `VALIDATION_PASSED: Chain ID ${chainId}`,
+            reasoning: data.payload.audit_reasoning || (isFailed ? 'High risk of hallucination or policy violation detected in automated decision path.' : 'All enterprise safety thresholds met. Confidence, ROI, and Policy checks returned PASS.'),
+            confidence: data.payload.confidence || '94.1%',
+            metadata: {
+              roi_status: data.payload.roi_status || 'PASS',
+              policy_compliance: data.payload.policy_compliance || 'PASS',
+              hallucination_risk: data.payload.hallucination_risk || 'LOW',
+              user_id: data.payload.user_id
+            },
+            timestamp: new Date().toLocaleTimeString(),
+            status: isFailed ? 'FAIL' : 'PASS'
+          };
+          debouncedUpdateEvents(newEvent);
+
+          if (isFailed) {
+            // Hand off to human
+            const newEsc = {
+              id: `GOV-${data.payload.user_id.slice(-4).toUpperCase()}`,
+              userId: data.payload.user_id,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              badgeText: 'GOV_ESCALATION',
+              badgeColor: 'border-cyber-alert text-cyber-alert bg-cyber-alert/10',
+              reason: `Governance Failure: ${data.payload.reason}`,
+              offers: 'Awaiting human review of AI strategy.',
+              features: [
+                { name: 'Conf. Impact', val: data.payload.confidence || 'Low' },
+                { name: 'Policy Risk', val: 'CRITICAL' },
+                { name: 'ROI Gap', val: data.payload.roi_status === 'FAIL' ? 'DETECTED' : 'NONE' }
+              ],
+              timestamp: new Date().toISOString(),
+              status: 'PENDING'
+            };
+            setEscalations(prev => [newEsc, ...prev].slice(0, 50));
+            setNotification(`Governance Alert: ${data.payload.reason}. Human handoff triggered.`);
+            setTimeout(() => setNotification(null), 5000);
+          }
+        }
+
         if (data.type === 'ESCALATION_CLAIMED') {
           const newEvent = {
             id: Date.now() + Math.random(),

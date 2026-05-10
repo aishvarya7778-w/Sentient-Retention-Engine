@@ -30,7 +30,7 @@ export const Hero = () => {
     <section ref={ref} className="relative min-h-screen w-full overflow-hidden flex flex-col justify-between pt-32 pb-10">
       {/* Floating 3D blob */}
       <div
-        className="absolute right-[-10%] top-[8%] w-[55vw] max-w-[820px] aspect-square pointer-events-none"
+        className="absolute right-[12%] top-[12%] w-[42vw] max-w-[580px] aspect-square pointer-events-none"
         style={{ transform: `translate3d(${t.x}px, ${t.y}px, 0)`, transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)" }}
       >
         <div className="absolute inset-0 rounded-full blur-[120px] opacity-60"
@@ -55,7 +55,7 @@ export const Hero = () => {
 
       {/* Big editorial type */}
       <div className="relative z-10 px-6 md:px-10">
-        <h1 className="font-display text-foreground leading-[0.88] text-[16vw] md:text-[12vw] tracking-tighter">
+        <h1 className="font-display text-foreground leading-[0.88] text-[8vw] md:text-[clamp(3rem,6.5vw,5.5rem)] tracking-tighter">
           <span className="block overflow-hidden">
             <span className="block" style={{ animation: "char-up 1.1s cubic-bezier(0.22,1,0.36,1) both" }}>
               Predict churn
@@ -113,7 +113,7 @@ export const Hero = () => {
         ].map((s) => (
           <div key={s.l} className="bg-background p-5">
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{s.l}</div>
-            <div className="mt-2 font-display text-3xl md:text-4xl">{s.v}</div>
+            <div className="mt-2 font-display text-xl md:text-2xl">{s.v}</div>
           </div>
         ))}
       </div>

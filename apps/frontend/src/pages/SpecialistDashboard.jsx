@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, AlertOctagon, User, Phone, Mail, MessageSquare, CheckCircle, Clock, TrendingDown, Send, FileText, ArrowLeft, Zap, Shield, Activity } from 'lucide-react';
+import { X, AlertOctagon, User, Phone, Mail, MessageSquare, CheckCircle, Clock, TrendingDown, Send, FileText, ArrowLeft, Zap, Shield, Activity, ShieldAlert, Scale, FileSearch, Gavel } from 'lucide-react';
 import apiClient from '../services/apiClient';
 
 // ─── Timeline Event ───────────────────────────────────────────────────────────
@@ -81,12 +81,15 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
   const escalationId = escalation?.id || 'ESC-000';
   const churnRisk = escalation?.churnRisk || 0.85;
   const claimedAt = escalation?.claimed_at ? new Date(escalation.claimed_at) : new Date();
+  
+  const isGovernanceCase = !!escalation?.metadata?.governance_data;
+  const govData = escalation?.metadata?.governance_data;
 
   const timeline = [
     { icon: Zap,          color: 'bg-gray-700 text-gray-300',                title: 'Customer flagged by ML classifier', time: '5 min ago',  detail: `Churn score: ${(churnRisk * 100).toFixed(0)}% — driver: QUALITY` },
     { icon: Activity,     color: 'bg-blue-900 text-blue-300',                title: 'LangGraph agent triggered',         time: '4 min ago',  detail: 'Digital twin simulation ran 2 iterations. Both rejected retention offers.' },
-    { icon: Shield,       color: 'bg-orange-900 text-orange-300',            title: 'Business rules check failed',       time: '3 min ago',  detail: escalation?.reason || 'Confidence below threshold. Escalating to human.' },
-    { icon: AlertOctagon, color: 'bg-red-900 text-red-300',                  title: 'Escalated to Human Handoff queue',  time: '2 min ago',  detail: null },
+    { icon: Shield,       color: isGovernanceCase ? 'bg-red-900/50 text-red-400' : 'bg-orange-900 text-orange-300', title: isGovernanceCase ? 'Governance Validation Failed' : 'Business rules check failed', time: '3 min ago',  detail: isGovernanceCase ? `ROI: ${govData.roi_status} | Policy: ${govData.policy_compliance} | Risk: ${govData.hallucination_risk}` : (escalation?.reason || 'Confidence below threshold. Escalating to human.') },
+    { icon: isGovernanceCase ? ShieldAlert : AlertOctagon, color: 'bg-red-900 text-red-300',                  title: isGovernanceCase ? 'CRITICAL: GOVERNANCE ESCALATION' : 'Escalated to Human Handoff queue',  time: '2 min ago',  detail: isGovernanceCase ? govData.reason : null },
     { icon: User,         color: 'bg-[#c5f82a]/20 text-[#c5f82a]',          title: 'You claimed this case',             time: new Date(claimedAt).toLocaleTimeString(), detail: null },
   ];
 
@@ -99,7 +102,8 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
     try {
       await apiClient.post('/action', { 
         user_id: customerId, 
-        action: actionType 
+        action: actionType,
+        escalation_id: escalationId // Allow backend to link if it wants to, but service handles optionality
       });
       setActionTaken(actionType);
       showToast(`✓ ${label} sent to ${customerId}`);
@@ -117,6 +121,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
     try {
       await apiClient.post('/escalations/note', {
         escalation_id: escalationId,
+        user_id: customerId, // Added missing user_id
         note: note.trim(),
         specialist_id: user.id,
         specialist_name: specialistName
@@ -278,7 +283,11 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                 <ActionButton icon={Zap}         color="green"  label="Send Discount"   sublabel="20% off 3mo"    disabled={!!actionTaken || isSubmitting} onClick={() => executeAction('DISCOUNT', '20% Discount')} />
                 <ActionButton icon={Mail}         color="blue"   label="Send Email"      sublabel="Retention msg"  disabled={!!actionTaken || isSubmitting} onClick={() => executeAction('EMAIL', 'Retention Email')} />
                 <ActionButton icon={Phone}        color="orange" label="Schedule Call"   sublabel="Priority queue" disabled={!!actionTaken || isSubmitting} onClick={() => executeAction('CALL', 'Call Scheduled')} />
-                <ActionButton icon={TrendingDown} color="red"    label="Escalate Up"     sublabel="Senior mgr"     disabled={!!actionTaken || isSubmitting} onClick={() => executeAction('ESCALATE', 'Senior Escalation')} />
+                {isGovernanceCase ? (
+                  <ActionButton icon={Gavel} color="red" label="Manual Override" sublabel="Bypass Policy" disabled={!!actionTaken || isSubmitting} onClick={() => executeAction('OVERRIDE', 'Governance Override')} />
+                ) : (
+                  <ActionButton icon={TrendingDown} color="red"    label="Escalate Up"     sublabel="Senior mgr"     disabled={!!actionTaken || isSubmitting} onClick={() => executeAction('ESCALATE', 'Senior Escalation')} />
+                )}
               </div>
               {actionTaken && (
                 <div className="mt-4 p-4 bg-[#c5f82a]/5 border border-[#c5f82a]/20 rounded-xl flex items-center gap-3">
@@ -289,19 +298,74 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
             </div>
 
             {/* AI Context Panel */}
-            <div>
-              <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">AI Reasoning Context</div>
-              <div className="bg-[#060c08] border border-[#1a281e] rounded-2xl p-5">
-                <div className="font-mono text-[11px] text-gray-300 leading-loose space-y-1">
-                  <div className="text-gray-600"># LangGraph Agent Trace</div>
-                  <div><span className="text-blue-400">[intent_summary]</span> High frustration signal. Network reliability driver detected.</div>
-                  <div><span className="text-orange-400">[classifier]</span> XGBoost score: <span className="text-[#c5f82a]">{(churnRisk * 100).toFixed(0)}%</span> · Driver: QUALITY</div>
-                  <div><span className="text-cyan-400">[rag]</span> Retrieved: "Priority support + network diagnostics playbook"</div>
-                  <div><span className="text-[#c5f82a]">[digital_twin_sim]</span> Iteration 1: rejected · Iteration 2: rejected</div>
-                  <div><span className="text-red-400">[business_rules]</span> FAIL · Confidence {`<`} 0.5 · Iterations ≥ 3</div>
-                  <div><span className="text-red-400">[human_handoff]</span> Escalated. Awaiting specialist intervention.</div>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div>
+                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">AI Reasoning Context</div>
+                <div className="bg-[#060c08] border border-[#1a281e] rounded-2xl p-5 h-full">
+                  <div className="font-mono text-[11px] text-gray-300 leading-loose space-y-1">
+                    <div className="text-gray-600"># LangGraph Agent Trace</div>
+                    <div><span className="text-blue-400">[intent_summary]</span> High frustration signal. Network reliability driver detected.</div>
+                    <div><span className="text-orange-400">[classifier]</span> XGBoost score: <span className="text-[#c5f82a]">{(churnRisk * 100).toFixed(0)}%</span> · Driver: QUALITY</div>
+                    <div><span className="text-cyan-400">[rag]</span> Retrieved: "Priority support + network diagnostics playbook"</div>
+                    <div><span className="text-[#c5f82a]">[digital_twin_sim]</span> Iteration 1: rejected · Iteration 2: rejected</div>
+                    <div><span className="text-red-400">[business_rules]</span> FAIL · Confidence {`<`} 0.5 · Iterations ≥ 3</div>
+                    <div><span className="text-red-400">[human_handoff]</span> Escalated. Awaiting specialist intervention.</div>
+                  </div>
                 </div>
               </div>
+
+              {isGovernanceCase && (
+                <div>
+                  <div className="text-[10px] text-red-500 font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <ShieldAlert size={12} />
+                    Governance Validation Audit
+                  </div>
+                  <div className="bg-[#0f0a0a] border border-red-900/30 rounded-2xl p-5 h-full relative overflow-hidden group hover:border-red-500/30 transition-colors">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Scale size={80} className="text-red-500" />
+                    </div>
+                    
+                    <div className="space-y-4 relative z-10">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                          <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">ROI Analysis</div>
+                          <div className={`text-xs font-mono font-bold ${govData.roi_status === 'PASS' ? 'text-[#c5f82a]' : 'text-red-400'}`}>
+                            {govData.roi_status}
+                          </div>
+                        </div>
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                          <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Policy Compliance</div>
+                          <div className={`text-xs font-mono font-bold ${govData.policy_compliance === 'PASS' ? 'text-[#c5f82a]' : 'text-red-400'}`}>
+                            {govData.policy_compliance}
+                          </div>
+                        </div>
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                          <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Hallucination Risk</div>
+                          <div className={`text-xs font-mono font-bold ${govData.hallucination_risk === 'LOW' ? 'text-[#c5f82a]' : 'text-red-400'}`}>
+                            {govData.hallucination_risk}
+                          </div>
+                        </div>
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                          <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Audit Reasoning</div>
+                          <div className="text-[10px] text-gray-400 font-mono italic leading-tight">
+                            {govData.audit_reasoning || 'Validation triggered due to outlier ROI projection.'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                        <div className="flex items-center gap-2 text-red-400 text-[10px] font-bold uppercase mb-1">
+                          <AlertOctagon size={12} />
+                          Specialist Action Required
+                        </div>
+                        <div className="text-[11px] text-gray-300 leading-relaxed font-sans">
+                          This request violates standard autonomous execution bounds. Manual review of <b>{govData.reason}</b> is mandatory before overriding.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Specialist Notes */}

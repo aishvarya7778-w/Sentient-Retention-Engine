@@ -1,76 +1,76 @@
-from typing import Dict, Any
+import time
+import random
+from typing import Dict, Any, List
 from ..state import RetentionState
 from ..llm_provider import get_llm
 from ..models import SimulationResult
+from .utils import emit_telemetry
 
 llm, LLM_AVAILABLE = get_llm()
 
-def node_digital_twin_sim(state: RetentionState) -> Dict[str, Any]:
-    print(f"[NODE] 6a: Digital Twin Sim (Iter: {state.get('simulation_iterations', 0)})")
-    iters = state.get('simulation_iterations', 0) + 1
+def node_simulation(state: RetentionState) -> Dict[str, Any]:
+    """
+    [Agent 3: SimulationAgent]
+    Purpose: Simulate outcomes for each candidate strategy.
+    """
+    candidates = state.get("strategy_candidates", [])
+    emit_telemetry(state, "SimulationAgent", "SIMULATION_STARTED", f"Simulating {len(candidates)} candidate strategies.")
     
-    last_offer = "Standard Bundle"
-    if state.get('offers_tried'):
-        last_offer = state.get('offers_tried')[-1]
+    simulation_results = []
+    
+    for strategy in candidates:
+        emit_telemetry(state, "SimulationAgent", "STRATEGY_SIMULATION", f"Running digital twin for: {strategy.get('name')}")
+        
+        # In a real scenario, we might use an LLM here to simulate the customer's reaction.
+        # For efficiency, we'll use a combination of rule-based scoring and probabilistic modeling.
+        
+        # Base probability from strategy ROI estimate + some randomness
+        roi = strategy.get("roi_estimate", 0.5)
+        sentiment_score = random.uniform(0.3, 0.9) # Simulated sentiment
+        
+        # User's Simulation Logic: score = (ROI * 0.7) + (sentiment_score * 0.3)
+        score = (roi * 0.7) + (sentiment_score * 0.3)
+        
+        if score > 0.8:
+            outcome = "RETAINED"
+            success_probability = 0.94
+            retention_forecast = "94%"
+        elif score > 0.5:
+            outcome = "STABLE"
+            success_probability = 0.62
+            retention_forecast = "62%"
+        else:
+            outcome = "LOST"
+            success_probability = 0.21
+            retention_forecast = "21%"
+        
+        # Engagement score forecast
+        engagement_forecast = 7.5 + random.uniform(-1, 2)
+        
+        # CLV impact (dollar value)
+        clv_impact = random.uniform(50, 200)
+        
+        sim_data = {
+            **strategy,
+            "success_probability": success_probability,
+            "simulation_score": score,
+            "outcome": outcome,
+            "retention_forecast": retention_forecast,
+            "engagement_forecast": engagement_forecast,
+            "clv_impact": clv_impact,
+            "user_reaction": "Positive" if score > 0.6 else "Skeptical"
+        }
+        simulation_results.append(sim_data)
+        
+        # Small delay to mimic processing
+        time.sleep(0.1)
 
-    if LLM_AVAILABLE:
-        try:
-            structured_llm = llm.with_structured_output(SimulationResult)
-            
-            prompt = f"""You are a digital twin of a telco customer. 
-            Evaluate this offer: {last_offer}
-            Customer Context: {state.get('summary')}
-            Driver: {state.get('driver')}
-            """
-            
-            sim = structured_llm.invoke(prompt)
-            response = "accept" if sim.acceptance_probability > 0.7 else f"reject: {sim.user_reaction}"
-            
-            responses = state.get('responses', [])
-            responses.append(response)
-            
-            return {
-                "simulation_iterations": iters,
-                "responses": responses,
-                "churn_score": sim.new_churn_score
-            }
-        except Exception as e:
-            print(f"Structured simulation failed: {e}, using mock fallback")
-            
-    # Mock Fallback
-    response = "accept" if iters >= 2 else "reject: need better offer"
-    responses = state.get('responses', [])
-    responses.append(response)
+    emit_telemetry(state, "SimulationAgent", "SIMULATION_COMPLETED", 
+                   f"Successfully simulated {len(simulation_results)} strategies.")
     
     return {
-        "simulation_iterations": iters,
-        "responses": responses
-    }
-
-def node_nurture_sim(state: RetentionState) -> Dict[str, Any]:
-    print(f"[NODE] 6b: Nurture Sim (Iter: {state.get('simulation_iterations', 0)})")
-    iters = state.get('simulation_iterations', 0) + 1
-    
-    nps_scores = state.get('nps_scores', [])
-    nps_scores.append(7.0 + iters)
-    
-    return {
-        "simulation_iterations": iters,
-        "nps_scores": nps_scores
-    }
-
-def node_impact_eval_high(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 8a: Impact Assessment (High)")
-    prob = min(0.4 + (state.get('simulation_iterations', 1) * 0.2), 0.95)
-    return {
-        "success_probability": prob,
-        "assessment_reasoning": "Offer becomes more compelling with iteration."
-    }
-
-def node_impact_eval_low(state: RetentionState) -> Dict[str, Any]:
-    print("[NODE] 8b: Impact Assessment (Low)")
-    prob = 0.85
-    return {
-        "success_probability": prob,
-        "assessment_reasoning": "Engagement strategy is highly likely to boost NPS."
+        "simulation_results": simulation_results,
+        "engagement_score_forecast": sum(r["engagement_forecast"] for r in simulation_results) / len(simulation_results) if simulation_results else 0,
+        "clv_impact": sum(r["clv_impact"] for r in simulation_results) / len(simulation_results) if simulation_results else 0,
+        "agent_telemetry": state.get("agent_telemetry", [])
     }

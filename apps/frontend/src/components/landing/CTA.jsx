@@ -12,7 +12,7 @@ export const CTA = () => {
 
       <div className="relative text-center max-w-5xl mx-auto">
         <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-6">[05] — Deploy SENTIENT</div>
-        <h2 className="font-display text-[16vw] md:text-[10vw] leading-[0.88]">
+        <h2 className="font-display text-[9vw] md:text-[clamp(3.5rem,7.5vw,6.5rem)] leading-[0.88]">
           Stop losing <span className="italic-serif text-iris">revenue</span>.
         </h2>
         <p className="mt-8 text-lg text-muted-foreground max-w-xl mx-auto">
