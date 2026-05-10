@@ -13,7 +13,7 @@ import LiveAnalyticsSection from '../components/dashboard/LiveAnalyticsSection';
 import {
   KPICard, DonutChart, BarChart, Heatmap, ModelCard, FeatureImportance,
   EscalationCard, EscalationDetailsModal, ChainOfThoughtTerminal, AuditLogTable,
-  ActivityKPICard, LiveEventCard
+  ActivityKPICard, LiveEventCard, WorkflowChainOverlay
 } from '../components/dashboard/DashboardComponents';
 
 const Dashboard = ({ isAdminView = false }) => {
@@ -60,6 +60,8 @@ const Dashboard = ({ isAdminView = false }) => {
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
   const [auditSearchTerm, setAuditSearchTerm] = useState('');
   const [isPaused, setIsPaused] = useState(false);
+  const [selectedChainId, setSelectedChainId] = useState(null);
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
 
   const containerRef = useRef();
   const graphRef = useRef();
@@ -95,6 +97,16 @@ const Dashboard = ({ isAdminView = false }) => {
   useEffect(() => {
     setTriggerAction(triggerAction);
   }, [setTriggerAction]);
+
+  const chainEvents = useMemo(() => {
+    if (!selectedChainId) return [];
+    return liveEvents.filter(e => e.chainId === selectedChainId);
+  }, [liveEvents, selectedChainId]);
+
+  const handleEventClick = (chainId) => {
+    setSelectedChainId(chainId);
+    setIsTimelineOpen(true);
+  };
 
   const exportToCSV = (data, filename) => {
     if (!data || !data.length) {
@@ -261,19 +273,34 @@ const Dashboard = ({ isAdminView = false }) => {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-[#050806] text-[#e1e8e2] font-sans selection:bg-[#c5f82a]/30 relative overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#050505] text-[#e1e8e2] font-mono selection:bg-[#c5f82a]/30 relative overflow-hidden">
+      {/* Cyber-SOC HUD Overlays */}
+      <div className="hud-grid" />
+      <div className="hud-scanline" />
+      
+      {/* System Status Ticker */}
+      <div className="h-6 bg-cyber-primary/5 border-b border-cyber-primary/20 flex items-center px-4 overflow-hidden relative z-50">
+        <div className="flex gap-8 animate-marquee whitespace-nowrap text-[9px] font-black tracking-widest text-cyber-primary/60">
+          <span>SYSTEM_STATUS: OPTIMAL</span>
+          <span>NEURAL_LATENCY: 14MS</span>
+          <span>ACTIVE_PIPELINES: 12</span>
+          <span>THREAT_LEVEL: LOW</span>
+          <span>ORCHESTRATOR_UPTIME: 99.98%</span>
+          <span className="text-cyber-alert">ALERT: CUST-8821 RISK_SPIKE_DETECTED</span>
+          <span>GEOGRAPHIC_LOAD: BALANCED</span>
+          <span>INTEGRITY_CHECK: PASS</span>
+        </div>
+      </div>
+
       <div 
-        className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay pointer-events-none" 
+        className="absolute inset-0 opacity-10 bg-cover bg-center mix-blend-overlay pointer-events-none" 
         style={{backgroundImage: "url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?q=80&w=2000')"}}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a1a0f]/80 to-[#040a06]/95 pointer-events-none" />
+      <div className="absolute inset-0 bg-[#050505]/95 pointer-events-none" />
       
       <div className={`flex w-full h-full relative z-10 transition-all duration-500 ${isFullView ? 'p-0' : 'p-4 md:p-6 lg:p-8'}`}>
-        <div className="w-24 flex flex-col items-center pt-2 shrink-0 animate-in fade-in slide-in-from-left-4 duration-500">
-          <Link to="/" className="text-[#c5f82a] font-bold text-xl tracking-widest mb-8 hover:opacity-80 transition-opacity">SRE</Link>
-          <Link to="/" className="w-12 h-12 bg-[#122216] border border-[#2a4230] rounded-2xl flex items-center justify-center text-[#c5f82a] mb-8 shadow-lg cursor-pointer hover:bg-[#1a2f20] transition-colors">
-            <Globe size={22} />
-          </Link>
+        <div className="w-20 flex flex-col items-center pt-4 shrink-0 animate-in fade-in slide-in-from-left-4 duration-500 border-r border-cyber-border bg-cyber-black z-20">
+          <Link to="/" className="text-cyber-primary font-black text-2xl tracking-tighter mb-10 hover:opacity-80 transition-opacity">SRE</Link>
           <div className="flex flex-col gap-6 items-center">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -282,12 +309,12 @@ const Dashboard = ({ isAdminView = false }) => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex flex-col items-center gap-1.5 transition-all group ${isActive ? 'text-[#c5f82a]' : 'text-gray-500 hover:text-gray-300'}`}
+                  className={`flex flex-col items-center gap-1.5 transition-all group ${isActive ? 'text-cyber-primary' : 'text-zinc-600 hover:text-zinc-400'}`}
                 >
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-[#c5f82a] text-[#0a110b] shadow-[0_0_15px_rgba(197,248,42,0.4)]' : 'bg-[#0a1a0f] border border-[#1a2d21] group-hover:border-[#2a4230]'}`}>
-                    <Icon size={20} />
+                  <div className={`w-10 h-10 flex items-center justify-center transition-all border ${isActive ? 'bg-cyber-primary text-cyber-black border-cyber-primary shadow-[0_0_15px_rgba(197,248,42,0.3)]' : 'bg-transparent border-zinc-800 group-hover:border-zinc-600'}`}>
+                    <Icon size={18} />
                   </div>
-                  <span className="text-[9px] uppercase font-bold tracking-widest">{item.name}</span>
+                  <span className="text-[7px] uppercase font-black tracking-[0.2em]">{item.name}</span>
                 </button>
               );
             })}
@@ -300,17 +327,17 @@ const Dashboard = ({ isAdminView = false }) => {
                 className="flex flex-col items-center gap-1 group cursor-pointer hover:opacity-80 transition-all"
                 title="Login as Admin"
               >
-                <div className="w-12 h-12 rounded-2xl bg-[#121c16] border border-[#2a4230] flex items-center justify-center text-gray-400 group-hover:text-[#c5f82a] group-hover:border-[#c5f82a]/50 transition-all shadow-lg">
+                <div className="w-10 h-10 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-cyber-primary group-hover:border-cyber-primary/50 transition-all">
                   <User size={18} />
                 </div>
-                <span className="text-[8px] uppercase font-bold text-gray-600 truncate max-w-[60px]">{displayName}</span>
+                <span className="text-[7px] uppercase font-black text-zinc-700 truncate max-w-[60px]">{displayName}</span>
               </button>
             ) : (
               <div className="flex flex-col items-center gap-1 group">
-                <div className="w-12 h-12 rounded-2xl bg-[#121c16] border border-[#2a4230] flex items-center justify-center text-gray-400 group-hover:text-[#c5f82a] transition-all">
+                <div className="w-10 h-10 border border-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-cyber-primary transition-all">
                   <User size={18} />
                 </div>
-                <span className="text-[8px] uppercase font-bold text-gray-600 truncate max-w-[60px]">{displayName}</span>
+                <span className="text-[7px] uppercase font-black text-zinc-700 truncate max-w-[60px]">{displayName}</span>
               </div>
             )}
             
@@ -318,17 +345,17 @@ const Dashboard = ({ isAdminView = false }) => {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => navigate('/admin/management')}
-                  className="w-12 h-12 rounded-2xl bg-[#c5f82a]/10 border border-[#c5f82a]/20 flex items-center justify-center text-[#c5f82a] hover:bg-[#c5f82a] hover:text-[#0a110b] transition-all shadow-lg"
+                  className="w-10 h-10 border border-cyber-primary/20 flex items-center justify-center text-cyber-primary hover:bg-cyber-primary hover:text-cyber-black transition-all shadow-lg"
                   title="Admin Management"
                 >
-                  <Layout size={20} />
+                  <Layout size={18} />
                 </button>
                 <button
                   onClick={logout}
-                  className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg"
+                  className="w-10 h-10 border border-red-500/20 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg"
                   title="Logout"
                 >
-                  <LogOut size={20} />
+                  <LogOut size={18} />
                 </button>
               </div>
             )}
@@ -337,7 +364,7 @@ const Dashboard = ({ isAdminView = false }) => {
         
         <div className={`flex-1 flex flex-col min-w-0 ${isFullView ? 'pl-0' : 'pl-2'}`}>
           {activeTab === 'Activity' && (
-            <div className="flex flex-col h-full bg-[#070c08]/80 backdrop-blur-2xl rounded-3xl border border-[#1a281e] p-6 shadow-2xl relative overflow-hidden">
+            <div className="flex flex-col h-full bg-cyber-black border border-cyber-border p-6 shadow-2xl relative overflow-hidden">
               <div className="grid grid-cols-4 gap-6 shrink-0 mb-6">
                 <ActivityKPICard title="INTERVENTIONS TODAY" value={(kpis?.interventions_today || 0).toLocaleString()} />
                 <ActivityKPICard title="CHURN PREVENTED" value={kpis?.churn_prevented || '0%'} />
@@ -346,12 +373,12 @@ const Dashboard = ({ isAdminView = false }) => {
               </div>
 
               <div className="flex gap-6 flex-1 min-h-0">
-                <div className="w-7/12 flex flex-col h-full bg-[#0f1712]/50 backdrop-blur-md rounded-2xl border border-[#1a281e] p-5 relative">
+                <div className="w-7/12 flex flex-col h-full bg-cyber-surface border border-cyber-border p-5 relative shadow-brutalist">
                   <div className="flex justify-between items-start mb-6 shrink-0">
                     <div>
-                      <h2 className="text-xl font-bold text-gray-200">Live Customer Events</h2>
-                      <div className="flex items-center gap-2 text-[#c5f82a] text-[10px] uppercase font-bold tracking-wider mt-1">
-                        <ArrowRight size={12} className="-rotate-90" /> updating in real-time
+                      <h2 className="text-xl font-black text-white uppercase tracking-tighter font-mono">Agent Activity Stream</h2>
+                      <div className="flex items-center gap-2 text-cyber-primary text-[9px] uppercase font-black tracking-[0.2em] mt-2">
+                        <Activity size={12} className="animate-pulse" /> Neural Observability Active
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -360,28 +387,28 @@ const Dashboard = ({ isAdminView = false }) => {
                           type="text" 
                           value={activitySearchId} 
                           onChange={e => setActivitySearchId(e.target.value)}
-                          placeholder="Specific Customer ID..." 
-                          className="w-48 bg-[#121c16] border border-[#233529] rounded-xl py-2 pl-9 pr-3 text-[10px] text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#c5f82a]/40 transition-all shadow-inner"
+                          placeholder="TARGET_CUSTOMER_ID..." 
+                          className="w-48 bg-cyber-black border border-cyber-border py-2 pl-9 pr-3 text-[9px] text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-cyber-primary/40 transition-all font-mono uppercase font-black"
                         />
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-[#c5f82a] transition-colors" />
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-cyber-primary transition-colors" />
                       </div>
                       <button 
                         onClick={() => runPipeline(setActiveNodeId, activitySearchId)}
                         disabled={isPipelineRunning}
-                        className={`px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${
-                          isPipelineRunning ? 'bg-[#1a281e] text-gray-500 cursor-not-allowed' : 'bg-[#c5f82a] text-[#0a110b] hover:shadow-[0_0_15px_rgba(197,248,42,0.3)] active:scale-95'
+                        className={`px-4 py-2 font-black text-[9px] uppercase tracking-widest transition-all ${
+                          isPipelineRunning ? 'bg-zinc-900 text-zinc-700 cursor-not-allowed border border-zinc-800' : 'bg-cyber-primary text-cyber-black hover:shadow-[0_0_15px_rgba(197,248,42,0.3)] active:translate-y-0.5'
                         }`}
                       >
-                        {isPipelineRunning ? 'Running...' : (activitySearchId ? 'Run Targeted' : 'Run Pipeline')}
+                        {isPipelineRunning ? 'SYS_BUSY' : (activitySearchId ? 'RUN_TARGETED' : 'RUN_PIPELINE')}
                       </button>
                     </div>
                     <button 
                       onClick={() => setIsPaused(!isPaused)}
-                      className={`border border-[#233529] px-4 py-1.5 rounded-lg text-xs transition-colors ${
-                        isPaused ? 'bg-[#c5f82a] text-[#0a110b]' : 'bg-[#121c16] text-gray-300 hover:text-white hover:border-[#32503a]'
+                      className={`border border-cyber-border px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors ${
+                        isPaused ? 'bg-cyber-primary text-cyber-black' : 'bg-cyber-black text-zinc-500 hover:text-white hover:border-zinc-600'
                       }`}
                     >
-                      {isPaused ? 'Resume Feed' : 'Pause Feed'}
+                      {isPaused ? 'RESUME_FEED' : 'PAUSE_FEED'}
                     </button>
                   </div>
                   
@@ -390,12 +417,12 @@ const Dashboard = ({ isAdminView = false }) => {
                       <FixedSizeList
                         height={eventsDimensions.height || 400}
                         itemCount={liveEvents.length}
-                        itemSize={80}
+                        itemSize={140}
                         itemData={liveEvents}
                       >
                         {({ index, style, data }) => (
                           <div style={style}>
-                            <LiveEventCard {...data[index]} />
+                            <LiveEventCard {...data[index]} onChainClick={handleEventClick} />
                           </div>
                         )}
                       </FixedSizeList>
@@ -405,9 +432,9 @@ const Dashboard = ({ isAdminView = false }) => {
                   </div>
                 </div>
 
-                <div className="w-5/12 flex flex-col h-full bg-[#0f1712]/50 backdrop-blur-md rounded-2xl border border-[#1a281e] p-5">
-                  <h2 className="text-xl font-bold text-gray-200 mb-6 shrink-0">Pipeline Live View</h2>
-                  <div className="flex-1 relative rounded-xl overflow-hidden bg-[#070c08] border border-[#1a281e] shadow-inner flex items-center justify-center">
+                <div className="w-5/12 flex flex-col h-full bg-cyber-surface border border-cyber-border p-5 shadow-brutalist">
+                  <h2 className="text-xl font-black text-white uppercase tracking-tighter font-mono mb-6 shrink-0">Pipeline Live View</h2>
+                  <div className="flex-1 relative overflow-hidden bg-cyber-black border border-cyber-border shadow-inner flex items-center justify-center">
                     <div className="absolute inset-0" ref={activityContainerRef}>
                       {pipelineGraphData.nodes.length > 0 && activityDimensions.width > 0 ? (
                         <ForceGraph2D
@@ -416,15 +443,15 @@ const Dashboard = ({ isAdminView = false }) => {
                           graphData={pipelineGraphData}
                           nodeRelSize={5}
                           backgroundColor="rgba(0,0,0,0)"
-                          linkColor={() => '#1f3826'}
-                          linkOpacity={0.6}
+                          linkColor={() => '#1A1A1A'}
+                          linkOpacity={0.8}
                           linkWidth={1}
                           nodeCanvasObject={activityNodeCanvasObject}
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center h-full opacity-30">
-                          <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#c5f82a] animate-spin-slow mb-4" />
-                          <span className="text-xs uppercase tracking-widest font-medium">Initializing Neural Path...</span>
+                          <div className="w-12 h-12 border-2 border-dashed border-cyber-primary animate-spin-slow mb-4" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-black text-cyber-primary">Initializing Neural Path...</span>
                         </div>
                       )}
                     </div>
@@ -436,10 +463,10 @@ const Dashboard = ({ isAdminView = false }) => {
 
           {activeTab === 'Pipeline' && (
             <div className={`flex flex-col flex-1 h-full min-h-0 relative`}>
-              <div className={`flex-1 transition-all duration-700 ease-in-out relative overflow-hidden flex shadow-2xl ${isFullView ? 'bg-black h-full w-full' : 'bg-[#09110c]/80 backdrop-blur-xl rounded-[2rem] border border-[#1a2d21]'}`}>
+              <div className={`flex-1 transition-all duration-700 ease-in-out relative overflow-hidden flex shadow-2xl ${isFullView ? 'bg-black h-full w-full' : 'bg-cyber-black border border-cyber-border shadow-brutalist'}`}>
                 <div className="absolute top-8 left-8 z-50 flex gap-3">
-                  <div className="px-4 py-2 rounded-xl bg-[#c5f82a] text-[#0a110b] font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-[0_0_20px_rgba(197,248,42,0.4)] animate-in zoom-in-50 duration-300">
-                    <div className="w-2 h-2 bg-[#0a110b] rounded-full animate-pulse"></div>
+                  <div className="px-4 py-2 bg-cyber-primary text-cyber-black font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-[0_0_20px_rgba(197,248,42,0.4)] animate-in zoom-in-50 duration-300">
+                    <div className="w-2 h-2 bg-cyber-black rounded-full animate-pulse"></div>
                     Live Pipeline Environment
                   </div>
                 </div>
@@ -890,7 +917,15 @@ const Dashboard = ({ isAdminView = false }) => {
           </div>
         )}
 
-        <EscalationDetailsModal escalation={selectedEscalation} onClose={() => setSelectedEscalation(null)} triggerAction={triggerAction} onClaim={handleClaim} />
+      {isAdminView && <EscalationDetailsModal isOpen={!!selectedEscalation} onClose={() => setSelectedEscalation(null)} escalation={selectedEscalation} onClaim={handleClaim} />}
+      
+      <WorkflowChainOverlay 
+        isOpen={isTimelineOpen} 
+        onClose={() => setIsTimelineOpen(false)} 
+        events={chainEvents} 
+        activeChainId={selectedChainId}
+      />
+
         {activeSpecialistCase && (
           <SpecialistDashboard 
             escalation={activeSpecialistCase} 

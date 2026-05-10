@@ -4,55 +4,53 @@
 
 /* Existing Frontend Styles */
 :root {
-  --primary-brand: #10B981;
-  --primary-brand-dark: #059669;
-  --secondary-brand: #3B82F6;
-  --accent-brand: #F59E0B;
-  --background-brand: #0F172A;
-  --surface-brand: #1E293B;
-  --text-main: #F8FAFC;
-  --text-dim: #94A3B8;
-  --border-brand: #334155;
+  --cyber-primary: #C5F82A;
+  --cyber-alert: #FF3E3E;
+  --cyber-warning: #FFB800;
+  --cyber-black: #050505;
+  --cyber-surface: #0D0D0D;
+  --cyber-border: #1A1A1A;
+  --cyber-border-light: #2A2A2A;
+  --text-main: #FFFFFF;
+  --text-dim: #71717A;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 2%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 4%;
+    --primary: 76 92% 57%; /* Acid Green */
+    --primary-foreground: 0 0% 2%;
 
     --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 12%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 18 100% 60%;
-    --accent-foreground: 0 0% 4%;
+    --accent: 76 92% 57%;
+    --accent-foreground: 0 0% 2%;
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 100% 62%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
-    --ring: 0 0% 98%;
+    --border: 0 0% 10%;
+    --input: 0 0% 10%;
+    --ring: 76 92% 57%;
 
-    --radius: 0.25rem;
+    --radius: 0px; /* STRICT BRUTALISM */
+  }
 
-    --iris-1: 320 90% 65%;
-    --iris-2: 185 90% 60%; /* Cyan instead of Purple */
-    --iris-3: 200 90% 60%;
-    --iris-4: 30 100% 60%;
-
-    --gradient-iris: linear-gradient(110deg, hsl(var(--iris-1)), hsl(var(--iris-2)) 35%, hsl(var(--iris-3)) 70%, hsl(var(--iris-4)));
+  /* Global Reset for Rounded Corners */
+  * {
+    border-radius: 0px !important;
   }
 }
 
@@ -108,6 +106,119 @@
 
 .animate-event-in {
   animation: event-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes timeline-node-in {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-up {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-timeline-node {
+  animation: timeline-node-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-scale-up {
+  animation: scale-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes glitch-flash {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; transform: translate(0, 0); }
+  94% { opacity: 0.8; transform: translate(-2px, 1px); color: #ff0000; }
+  96% { opacity: 1; transform: translate(2px, -1px); color: #00ff00; }
+  98% { opacity: 0.8; transform: translate(-1px, -2px); color: #0000ff; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+.animate-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-scan::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(197, 248, 42, 0.05) 50%, transparent 100%);
+  animation: scan-line 3s linear infinite;
+  pointer-events: none;
+}
+
+.animate-glitch-fail {
+  animation: glitch-flash 0.5s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+/* Cyber-SOC HUD Effects */
+.hud-scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 2px;
+  background: rgba(197, 248, 42, 0.1);
+  opacity: 0.1;
+  z-index: 9999;
+  pointer-events: none;
+  animation: scanline-move 8s linear infinite;
+}
+
+.hud-grid {
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(197, 248, 42, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(197, 248, 42, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes scanline-move {
+  0% { transform: translateY(-100vh); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes terminal-flicker {
+  0% { opacity: 0.97; }
+  5% { opacity: 0.9; }
+  10% { opacity: 0.97; }
+  15% { opacity: 1; }
+  25% { opacity: 0.9; }
+  30% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+.animate-terminal-flicker {
+  animation: terminal-flicker 0.15s infinite;
 }
 
 /* App Specific Container */

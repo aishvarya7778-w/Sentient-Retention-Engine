@@ -8,30 +8,79 @@ A production-grade Agentic AI platform designed to predict, simulate, and preven
 
 ## 🏗️ System Architecture
 
-The engine is built as a highly modular, secure microservices architecture:
+The Sentient Retention Engine is built on a modular, secure, and observable microservices architecture designed for high-fidelity decisioning.
 
 ```mermaid
-graph TD
-    User([User]) --> Frontend[React Dashboard]
-    Frontend --> Backend[Node.js API Gateway]
-    
-    subgraph "Intelligent Core"
-        Backend --> ML[ML Service - FastAPI]
-        Backend --> AI[Agentic AI - LangGraph]
-        AI --> DT[Digital Twin - Simulation]
+graph TB
+    subgraph "Edge & UI"
+        NGINX{NGINX Entrypoint}
+        UI["React Dashboard<br/>(Cyber-Brutalist UI)"]
     end
+
+    subgraph "Orchestration Layer"
+        Backend["API Gateway<br/>(Node.js / Express)"]
+        Auth["JWT & RBAC<br/>(Security Layer)"]
+    end
+
+    subgraph "Intelligence Tier"
+        ML["ML Service<br/>(Churn Prediction)"]
+        
+        subgraph "Agentic Workflow"
+            AI["Agent Orchestrator<br/>(LangGraph)"]
+            RA["Risk Analysis Agent"]
+            SA["Simulation Agent"]
+            DA["Decision Agent"]
+            GOV["Governance Engine"]
+        end
+    end
+
+    subgraph "Simulation Environment"
+        DT["Digital Twin Sandbox<br/>(Scenario Testing)"]
+    end
+
+    subgraph "Persistence & Real-time"
+        DB[("PostgreSQL<br/>(Case Management)")]
+        Redis[("Redis<br/>(Live Feed / Pub-Sub)")]
+    end
+
+    subgraph "Observability"
+        Prom["Prometheus"]
+        Graf["Grafana"]
+    end
+
+    %% Data Flow
+    UI <--> NGINX
+    NGINX <--> Backend
+    Backend <--> Auth
     
-    Backend --> DB[(PostgreSQL)]
-    Backend --> Redis[(Redis - Caching)]
+    Backend -- "REST/WS" --> ML
+    Backend -- "Agent Orchestration" --> AI
+    
+    AI --> RA --> SA --> DA --> GOV
+    SA <--> DT
+    
+    Backend <--> DB
+    Backend <--> Redis
+    AI <--> DB
+    AI <--> Redis
+    
+    Backend -.-> Prom
+    AI -.-> Prom
+    Prom --> Graf
+
+    %% Styling
+    style UI fill:#c5f82a,stroke:#000,stroke-width:2px,color:#000
+    style DT fill:#1a1a1a,stroke:#c5f82a,stroke-dasharray: 5 5,color:#fff
+    style AI fill:#222,stroke:#c5f82a,color:#fff
+    style GOV fill:#ff4444,stroke:#fff,color:#fff
 ```
 
-- **Frontend**: Real-time analytics dashboard with deep-dive risk inspection.
-- **Backend**: Secure API gateway with Role-Based Access Control (RBAC).
-- **ML Service**: Predictive engine analyzing usage patterns and risk indicators.
-- **Agentic AI**: Multi-agent system that observes, thinks, and decides on retention strategies.
-- **Digital Twin**: High-fidelity simulation environment to validate actions before deployment.
-
----
+- **Frontend (Cyber-Brutalist)**: A high-performance React dashboard featuring real-time "Agent Activity Streams" and "Decision Timelines" for full observability.
+- **API Gateway**: Secure entry point managing JWT authentication, role-based access control (RBAC), and service coordination.
+- **Agentic AI Orchestrator**: A multi-agent system built on LangGraph that executes autonomous retention workflows (Observe -> Think -> Simulate -> Decide).
+- **Digital Twin Sandbox**: A high-fidelity simulation environment where `SimulationAgent` tests intervention strategies against historical patterns before execution.
+- **Predictive ML Service**: Real-time churn risk scoring using specialized usage-pattern analysis.
+- **Observability Stack**: Integrated Prometheus and Grafana for real-time monitoring of agent confidence, execution times, and ROI metrics.
 
 ## ✨ Key Features
 
@@ -78,8 +127,6 @@ docker-compose up --build
 ### 2. Manual Setup
 
 Refer to the detailed [Setup Guide](./docs/SETUP.md) for local development configurations.
-
----
 
 ## 🛠️ Technology Stack
 

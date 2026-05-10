@@ -1,5 +1,4 @@
 from typing import Dict, Any
-from langchain_core.messages import HumanMessage, SystemMessage
 from ..state import RetentionState
 from ..llm_provider import get_llm
 from ..models import SimulationResult

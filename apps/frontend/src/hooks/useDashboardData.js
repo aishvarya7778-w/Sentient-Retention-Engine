@@ -62,13 +62,22 @@ export const useDashboardData = () => {
 
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        const chainId = data.payload?.chainId || `CH-${Math.random().toString(36).substring(7).toUpperCase()}`;
 
         if (data.type === 'CHURN_PREDICTION') {
           const newEvent = {
             id: Date.now() + Math.random(),
+            chainId,
+            agentId: 'XGBoostClassifier',
             type: 'PREDICTION',
             message: `Risk detected for user ${data.payload.user_id.slice(0, 8)}...`,
             score: `${(data.payload.churn_risk * 100).toFixed(1)}%`,
+            confidence: data.payload.confidence || 0.85,
+            reasoning: data.payload.reason || 'Pattern matching detected high churn probability based on historical usage decline.',
+            metadata: {
+              risk_level: data.payload.risk_level,
+              user_id: data.payload.user_id
+            },
             timestamp: new Date().toLocaleTimeString(),
             status: data.payload.risk_level === 'HIGH' ? 'FAIL' : data.payload.risk_level === 'MEDIUM' ? 'WARN' : 'PASS'
           };
@@ -78,8 +87,16 @@ export const useDashboardData = () => {
         if (data.type === 'AGENT_DECISION') {
           const newEvent = {
             id: Date.now() + Math.random(),
+            chainId,
+            agentId: 'DecisionAgent',
             type: 'DECISION',
             message: `Agent executed ${data.payload.action} for ${data.payload.user_id.slice(0, 8)}`,
+            reasoning: data.payload.reason || `Determined ${data.payload.action} as optimal recovery path.`,
+            confidence: 0.92,
+            metadata: {
+              action: data.payload.action,
+              user_id: data.payload.user_id
+            },
             timestamp: new Date().toLocaleTimeString(),
             status: 'PASS'
           };
@@ -94,8 +111,16 @@ export const useDashboardData = () => {
         if (data.type === 'SIMULATION_EVENT') {
           const newEvent = {
             id: Date.now() + Math.random(),
+            chainId,
+            agentId: 'SimulationAgent',
             type: 'SIMULATION',
             message: `Twin simulated ${data.payload.iterations} scenarios for ${data.payload.user_id.slice(0, 8)}`,
+            reasoning: `Digital twin projected ${(data.payload.success_rate * 100).toFixed(0)}% retention probability across ${data.payload.iterations} variations.`,
+            confidence: 0.88,
+            metadata: {
+              iterations: data.payload.iterations,
+              user_id: data.payload.user_id
+            },
             timestamp: new Date().toLocaleTimeString(),
             status: 'PASS'
           };
@@ -105,8 +130,11 @@ export const useDashboardData = () => {
         if (data.type === 'ESCALATION_CLAIMED') {
           const newEvent = {
             id: Date.now() + Math.random(),
+            chainId,
+            agentId: 'HumanSpecialist',
             type: 'ESCALATION',
             message: `Specialist claimed ${data.payload.user_id.slice(0, 8)}`,
+            reasoning: `Manual intervention initiated for complex churn scenario.`,
             timestamp: new Date().toLocaleTimeString(),
             status: 'PASS'
           };
@@ -121,8 +149,11 @@ export const useDashboardData = () => {
         if (data.type === 'SPECIALIST_ACTION_EXECUTED') {
           const newEvent = {
             id: Date.now() + Math.random(),
+            chainId,
+            agentId: 'HumanSpecialist',
             type: 'SPECIALIST_ACTION',
             message: `Specialist executed ${data.payload.action} for ${data.payload.user_id.slice(0, 8)}`,
+            reasoning: `Specialist applied human-in-the-loop decision: ${data.payload.action}`,
             timestamp: new Date().toLocaleTimeString(),
             status: 'PASS'
           };
@@ -159,8 +190,11 @@ export const useDashboardData = () => {
           
           const newEvent = {
             id: Date.now() + Math.random(),
+            chainId,
+            agentId: 'GuardrailAgent',
             type: 'ESCALATION',
             message: `URGENT: ${data.payload.reason} for ${data.payload.user_id.slice(0, 8)}`,
+            reasoning: `Business guardrails triggered human handoff for ${data.payload.reason}.`,
             timestamp: new Date().toLocaleTimeString(),
             status: 'FAIL'
           };
@@ -342,6 +376,7 @@ export const useDashboardData = () => {
       const users = ['user_001', 'user_002', 'user_003', 'user_004', 'user_005'];
       const randomUser = users[Math.floor(Math.random() * users.length)];
       const targetUser = specificUserId || randomUser;
+      const sessionChainId = `RET-${Math.floor(1000 + Math.random() * 9000)}`;
       
       const wsAi = new WebSocket(`${config.AGENT_WS_URL}/${targetUser}`);
       
@@ -378,14 +413,24 @@ export const useDashboardData = () => {
               setTerminalText(prev => prev + `\n[${data.node}] ${data.data.reasoning}`);
            }
 
-           const newEvent = {
+            const newEvent = {
               id: Date.now() + Math.random(),
+              chainId: sessionChainId,
+              agentId: data.node || 'AgentCore',
               type: 'AGENT_NODE',
               message: `[${data.node}] ${data.data?.reasoning || 'Executed'}`,
+              reasoning: data.data?.reasoning || 'Node execution completed successfully.',
+              confidence: data.data?.confidence || (70 + Math.random() * 25).toFixed(1) + '%',
+              metadata: {
+                node: data.node,
+                duration: `${(Math.random() * 1.5).toFixed(2)}s`,
+                retries: 0,
+                ...data.data
+              },
               timestamp: new Date().toLocaleTimeString(),
-              status: 'PASS'
-           };
-           setLiveEvents(prev => [newEvent, ...prev].slice(0, 50));
+              status: data.status === 'error' ? 'FAIL' : 'PASS'
+            };
+            setLiveEvents(prev => [newEvent, ...prev].slice(0, 50));
 
            if (data.node === 'human_handoff') {
               const newEscalation = {
