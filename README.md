@@ -380,3 +380,5 @@ Developed with ❤️ for the International AI & Automation Hackathon by:
 
 * **Satyam Raghuvanshi** ([raghuvanshi-sec](https://github.com/raghuvanshi-sec)) — *Systems Engineering, Express Gateway, Security & Database Architectures*
 * **Warth-Of-CodeGod** — *LangGraph Orchestration, Simulation Design, and React Frontend development*
+* **Shimant Ranjan** — *Lead Machine Learning Engineer & Digital Twin Architect (scikit-learn Predictive Churn Classifier, Scenario Sandbox Stress-Testing, and ROI Predictive Modelling)*
+* **Saksham Jaiswal** — *Database Engineer & High-Performance Scaling Architect (PostgreSQL Schema Optimization, Redis Pub/Sub Caching, and Real-Time Event Telemetry Channels)*
