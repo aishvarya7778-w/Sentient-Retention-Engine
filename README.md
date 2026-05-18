@@ -1,4 +1,5 @@
 # 🚀 Sentient-Retention Engine
+>
 > **Autonomous SaaS Churn Defense via Guardrailed Multi-Agent Workflows & High-Fidelity Digital Twins.**
 
 [![Hackathon Status](https://img.shields.io/badge/Hackathon-International_Grand_Prix-blueviolet?style=for-the-badge&logo=rocket)](https://github.com/satyamraghuvanshi/sentient-retention-engine)
@@ -12,6 +13,7 @@ The **Sentient-Retention Engine** is an enterprise-grade, closed-loop AI platfor
 ---
 
 ## 🏆 Project Showcase & Live Interfaces
+
 Our web application features a state-of-the-art **Cyber-Brutalist Dashboard** configured with high-contrast layouts, real-time WebSocket streams, dynamic live telemetry tickers, and absolute audit observability.
 
 ````carousel
@@ -135,31 +137,40 @@ flowchart TB
 ## ✨ Cutting-Edge Platform Features
 
 ### 1. Unified 9-Agent Closed-Loop Workflow
+
 The brain of SRE is structured around a highly observable **LangGraph workflow** that drives context-aware client preservation:
+
 * **Observe**: Telemetry and churn predictions are ingested.
 * **Think**: Historical save success scores and model features are compared.
 * **Simulate**: Plans are dynamically tested in a virtual sandbox environment.
 * **Decide**: The optimal, high-ROI mitigation mechanism is selected.
 
 ### 2. Enterprise Governance Engine (Zero-Trust Security)
+
 To protect corporate resources, agents do not have direct permission to issue discounts or modify records. SRE enforces a hybrid protection protocol:
+
 * **Tool-Level Restrictions**: Strictly checks agent capabilities against whitelist/blacklist directives.
 * **Impact-Level Constraints**: Pauses any discount exceeding financial ceilings (`$500.00`) or involving enterprise contracts, instantly routing the action to human operators.
 * **Dynamic Trust Scoring**: Adjusts individual agent trust indexes dynamically based on execution compliance, applying mathematical decay on warnings and slow recoveries for reliable behavior.
 
 ### 3. SafeLLM: Zero-Downtime Instant LLM Failover
+
 To bulletproof our system against third-party API outages, rate limits, or quota overruns, we built a custom wrapper that acts as an exact duck-typed proxy of standard LangChain LLMs:
+
 * **Primary Path**: Sends queries to Gemini (Flash/Pro) for cost-efficient reasoning.
 * **Fallback Path**: If a rate limit, timeout, or HTTP standard exception occurs, it seamlessly intercepts the call, fires an alert webhook, writes a warning to the `governance_audit_logs`, and completes the reasoning thread on Groq (Llama 3) in under **50ms**.
 
 ### 4. Background Concurrency & Deduplication Safeguards
+
 SRE implements a fail-safe, logical lock inside the API layer:
+
 * **Deduplication Check**: Ensures that only one active retention pipeline runs per user at any time, blocking concurrent duplicate API triggers and saving valuable tokens.
 * **Axios Graceful Degradation**: If the AI services are down, the Express gateway catches the failure, creates a `FAILED_AUTO_TRIGGER` database record, registers the failure telemetry, and broadcasts an alert to the dashboard.
 
 ---
 
 ## 🛠️ Technology Stack
+
 | Platform Domain | Technology Choices | Rationale |
 | :--- | :--- | :--- |
 | **Frontend Framework** | **React 18** | Ultra-responsive state reconciliation. |
@@ -175,7 +186,9 @@ SRE implements a fail-safe, logical lock inside the API layer:
 ## 🚦 Getting Started (Local Development Setup)
 
 ### 📋 Prerequisites
+
 Ensure your local development environment has the following software installed:
+
 * **Node.js** v20.x or higher
 * **Python** v3.10.x or higher (with `pip` and `virtualenv`)
 * **PostgreSQL** v15+ (with access credentials)
@@ -184,11 +197,15 @@ Ensure your local development environment has the following software installed:
 ---
 
 ### 🐳 Setup via Docker Compose (Recommended)
+
 You can launch the entire, fully connected stack (Frontend, Backend, AI Service, Database) using a single command:
+
 ```bash
 docker-compose up --build
 ```
+
 Once initialized, access the interfaces at:
+
 * 🖥️ **React Dashboard**: [http://localhost:3000](http://localhost:3000)
 * ⚙️ **Express Gateway**: [http://localhost:5000](http://localhost:5000)
 * 🧠 **FastAPI AI Server**: [http://localhost:8000/docs](http://localhost:8000/docs)
@@ -198,15 +215,18 @@ Once initialized, access the interfaces at:
 ### 💻 Manual Setup
 
 #### Step 1: Clone the Project
+
 ```bash
 git clone https://github.com/raghuvanshi-sec/Sentient-Retention-Engine.git
 cd Sentient-Retention-Engine
 ```
 
 #### Step 2: Configure Environment Variables
+
 Copy and configure the `.env` settings across all services:
 
 ##### Backend Configuration (`apps/backend/.env`)
+
 ```env
 PORT=5000
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sre_db
@@ -217,6 +237,7 @@ AGENTIC_AI_SERVICE_URL=http://localhost:8000
 ```
 
 ##### AI & Agentic Service Configuration (`apps/agentic-ai/.env`)
+
 ```env
 PORT=8000
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sre_db
@@ -225,6 +246,7 @@ GROQ_API_KEY=your_groq_api_key
 ```
 
 ##### Frontend Configuration (`apps/frontend/.env`)
+
 ```env
 VITE_API_URL=http://localhost:5000
 VITE_WS_URL=ws://localhost:5000
@@ -233,7 +255,9 @@ VITE_WS_URL=ws://localhost:5000
 ---
 
 #### Step 3: Run Database Migrations & Seeding
+
 In your terminal, navigate to the backend workspace directory and run setup commands:
+
 ```bash
 cd apps/backend
 npm install
@@ -244,12 +268,14 @@ npm run db:setup
 #### Step 4: Launch Services Independently
 
 ##### Terminal 1: Express Backend
+
 ```bash
 cd apps/backend
 npm run dev
 ```
 
 ##### Terminal 2: FastAPI AI Engine
+
 ```bash
 cd apps/agentic-ai
 # Create and activate virtual environment
@@ -260,6 +286,7 @@ python api/ai_api.py
 ```
 
 ##### Terminal 3: React Dashboard Page
+
 ```bash
 cd apps/frontend
 npm install
@@ -269,35 +296,47 @@ npm run dev
 ---
 
 ## 🔬 Test Suite & Quality Gates
+
 Our codebase features rigorous, priority-ordered automated tests checking every boundary and failure scenario:
 
 ### 1. Express Backend Tests
+
 Validates the predictions, locks, status checks, Axios failovers, and websocket integrations.
+
 ```bash
 cd apps/backend
 npm run test
 ```
+
 * **Outcome**: `3/3 Tests Passed` (Success paths, logical locks, and graceful degradation fallback validation completely passing).
 
 ### 2. FastAPI AI Provider Tests
+
 Validates the dynamic `SafeLLM` failovers and LLM proxy implementations.
+
 ```bash
 cd apps/agentic-ai
 python -m unittest core/test_llm_failover.py
 ```
+
 * **Outcome**: `3/3 Tests Passed` (Ensures Groq takes over in <50ms when Gemini suffers artificial outages).
 
 ### 3. Unified Developer Checklist Audit
+
 We validate the entire ecosystem before deployment using our strict multi-gate audit pipeline:
+
 ```bash
 python .agent/scripts/checklist.py .
 ```
+
 * Checks performed: **Security Vulnerabilities (OWASP), Code Linting, Database Schema Alignment, Unit Testing Coverage.**
 
 ---
 
 ## 🛠️ Observability & Dashboards
+
 To make SRE's internal thought process 100% visible, the React dashboard integrates comprehensive charts:
+
 * **Confidence Visualizer**: Track agent decision confidence scores per recommendation.
 * **Telemetry Audit Stream**: Watch live telemetry events broadcast directly via WebSockets.
 * **Agent Trust Scores Chart**: View compliance history and current trust index allocations in real-time.
@@ -305,8 +344,10 @@ To make SRE's internal thought process 100% visible, the React dashboard integra
 ---
 
 ## 📄 Licensing & Hackathon Credits
+
 Distributed under the **MIT License**. See `LICENSE` for more information.
 
 Developed with ❤️ for the International AI & Automation Hackathon by:
+
 * **Satyam Raghuvanshi** ([raghuvanshi-sec](https://github.com/raghuvanshi-sec)) — *Systems Engineering, Express Gateway, Security & Database Architectures*
 * **Warth-Of-CodeGod** — *LangGraph Orchestration, Simulation Design, and React Frontend development*
