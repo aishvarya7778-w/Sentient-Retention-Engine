@@ -15,7 +15,7 @@ const TimelineEvent = ({ icon: Icon, color, title, time, detail }) => (
       <div className="text-xs font-bold text-gray-200 font-sans tracking-wide">{title}</div>
       <div className="text-[10px] text-gray-500 mt-1 font-mono uppercase">{time}</div>
       {detail && (
-        <div className="text-[11px] text-gray-400 mt-2 bg-[#0a1a0f]/50 border border-[#1a281e] rounded-lg p-3 font-mono leading-relaxed tracking-tight">
+        <div className="text-[11px] text-gray-400 mt-2 bg-[#0a1a0f]/50 border border-[#1a281e] rounded-sm p-3 font-mono leading-relaxed tracking-tight">
           {detail}
         </div>
       )}
@@ -29,7 +29,7 @@ const ActionButton = ({ icon: Icon, label, sublabel, color, onClick, disabled })
     onClick={onClick}
     disabled={disabled}
     aria-label={`${label}: ${sublabel}`}
-    className={`flex flex-col items-center gap-2 p-5 rounded-2xl border transition-all active:scale-95 group ${
+    className={`flex flex-col items-center gap-2 p-5 rounded-sm border transition-all active:scale-95 group ${
       disabled ? 'opacity-40 cursor-not-allowed border-[#1a281e] bg-[#0a1a0f]/30' :
       color === 'green' ? 'border-[#c5f82a]/30 bg-[#c5f82a]/5 hover:bg-[#c5f82a]/15 hover:border-[#c5f82a]/60 hover:shadow-[0_0_20px_rgba(197,248,42,0.15)]' :
       color === 'blue'  ? 'border-blue-400/30 bg-blue-400/5 hover:bg-blue-400/10 hover:border-blue-400/50' :
@@ -56,8 +56,8 @@ const RiskBar = ({ label, value, pct }) => (
       <span className="text-gray-500 uppercase tracking-widest font-bold">{label}</span>
       <span className="text-[#c5f82a] font-mono font-bold tracking-tighter">{value}</span>
     </div>
-    <div className="h-1.5 w-full bg-[#1a281e] rounded-full overflow-hidden">
-      <div className="h-full bg-gradient-to-r from-[#8bc34a] to-[#c5f82a] rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
+    <div className="h-1.5 w-full bg-[#1a281e] rounded-none overflow-hidden">
+      <div className="h-full bg-gradient-to-r from-[#8bc34a] to-[#c5f82a] rounded-none transition-all duration-700" style={{ width: `${pct}%` }} />
     </div>
   </div>
 );
@@ -195,7 +195,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
           <div className="p-6 border-b border-[#1a281e]">
             <div className="text-[11px] text-gray-500 font-bold uppercase tracking-[0.2em] mb-5 font-sans">Customer Profile</div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1a4a25] to-[#0d2615] border border-[#2a4230] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-sm bg-gradient-to-br from-[#1a4a25] to-[#0d2615] border border-[#2a4230] flex items-center justify-center">
                 <User size={20} className="text-[#c5f82a]" />
               </div>
               <div>
@@ -226,7 +226,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
               <RiskBar label="Usage Decline"    value="61%"   pct={61} />
             </div>
 
-            <div className="mt-6 p-4 bg-red-500/5 border border-red-500/20 rounded-xl">
+            <div className="mt-6 p-4 bg-red-500/5 border border-red-500/20 rounded-sm">
               <div className="text-[11px] text-red-400 font-bold uppercase tracking-widest mb-2 font-sans">AI Failure Reason</div>
               <div className="text-[12px] text-gray-300 leading-relaxed font-mono tracking-tight">
                 {escalation.reason || 'Business rule confidence threshold not met. Digital twin rejected all automated offers.'}
@@ -237,7 +237,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
           {/* Offers Tried */}
           <div className="p-5">
             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Offers Attempted by AI</div>
-            <div className="text-[11px] text-gray-400 bg-[#0a1a0f]/50 border border-[#1a281e] rounded-lg p-3 font-mono">
+            <div className="text-[11px] text-gray-400 bg-[#0a1a0f]/50 border border-[#1a281e] rounded-sm p-3 font-mono">
               {escalation.offers || 'No automated offers succeeded'}
             </div>
           </div>
@@ -253,12 +253,12 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
               <h2 className="text-3xl font-bold text-white font-display tracking-tight">Retention Intervention</h2>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-[#0f1712] border border-[#1a281e] px-4 py-2 rounded-xl font-mono">
+              <div className="flex items-center gap-2 text-[11px] text-gray-500 bg-[#0f1712] border border-[#1a281e] px-4 py-2 rounded-sm font-mono">
                 <Clock size={12} className="text-[#c5f82a]" />
                 Claimed {claimedAt.toLocaleTimeString()}
               </div>
               {actionTaken && (
-                <div className="flex items-center gap-2 text-[11px] font-bold text-[#c5f82a] bg-[#c5f82a]/10 border border-[#c5f82a]/20 px-4 py-2 rounded-xl font-mono">
+                <div className="flex items-center gap-2 text-[11px] font-bold text-[#c5f82a] bg-[#c5f82a]/10 border border-[#c5f82a]/20 px-4 py-2 rounded-sm font-mono">
                   <CheckCircle size={12} />
                   {actionTaken} SENT
                 </div>
@@ -290,7 +290,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                 )}
               </div>
               {actionTaken && (
-                <div className="mt-4 p-4 bg-[#c5f82a]/5 border border-[#c5f82a]/20 rounded-xl flex items-center gap-3">
+                <div className="mt-4 p-4 bg-[#c5f82a]/5 border border-[#c5f82a]/20 rounded-sm flex items-center gap-3">
                   <CheckCircle size={16} className="text-[#c5f82a] shrink-0" />
                   <div className="text-sm text-[#c5f82a] font-semibold">Action <span className="font-mono">{actionTaken}</span> logged to audit trail for {customerId}.</div>
                 </div>
@@ -301,7 +301,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <div>
                 <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">AI Reasoning Context</div>
-                <div className="bg-[#060c08] border border-[#1a281e] rounded-2xl p-5 h-full">
+                <div className="bg-[#060c08] border border-[#1a281e] rounded-sm p-5 h-full">
                   <div className="font-mono text-[11px] text-gray-300 leading-loose space-y-1">
                     <div className="text-gray-600"># LangGraph Agent Trace</div>
                     <div><span className="text-blue-400">[intent_summary]</span> High frustration signal. Network reliability driver detected.</div>
@@ -320,32 +320,32 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                     <ShieldAlert size={12} />
                     Governance Validation Audit
                   </div>
-                  <div className="bg-[#0f0a0a] border border-red-900/30 rounded-2xl p-5 h-full relative overflow-hidden group hover:border-red-500/30 transition-colors">
+                  <div className="bg-[#0f0a0a] border border-red-900/30 rounded-sm p-5 h-full relative overflow-hidden group hover:border-red-500/30 transition-colors">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                       <Scale size={80} className="text-red-500" />
                     </div>
                     
                     <div className="space-y-4 relative z-10">
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                        <div className="bg-black/40 p-3 rounded-sm border border-white/5">
                           <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">ROI Analysis</div>
                           <div className={`text-xs font-mono font-bold ${govData.roi_status === 'PASS' ? 'text-[#c5f82a]' : 'text-red-400'}`}>
                             {govData.roi_status}
                           </div>
                         </div>
-                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                        <div className="bg-black/40 p-3 rounded-sm border border-white/5">
                           <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Policy Compliance</div>
                           <div className={`text-xs font-mono font-bold ${govData.policy_compliance === 'PASS' ? 'text-[#c5f82a]' : 'text-red-400'}`}>
                             {govData.policy_compliance}
                           </div>
                         </div>
-                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                        <div className="bg-black/40 p-3 rounded-sm border border-white/5">
                           <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Hallucination Risk</div>
                           <div className={`text-xs font-mono font-bold ${govData.hallucination_risk === 'LOW' ? 'text-[#c5f82a]' : 'text-red-400'}`}>
                             {govData.hallucination_risk}
                           </div>
                         </div>
-                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                        <div className="bg-black/40 p-3 rounded-sm border border-white/5">
                           <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Audit Reasoning</div>
                           <div className="text-[10px] text-gray-400 font-mono italic leading-tight">
                             {govData.audit_reasoning || 'Validation triggered due to outlier ROI projection.'}
@@ -353,7 +353,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                         </div>
                       </div>
                       
-                      <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                      <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-sm">
                         <div className="flex items-center gap-2 text-red-400 text-[10px] font-bold uppercase mb-1">
                           <AlertOctagon size={12} />
                           Specialist Action Required
@@ -379,12 +379,12 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                   onKeyDown={e => e.key === 'Enter' && e.ctrlKey && addNote()}
                   placeholder="Add a case note... (Ctrl+Enter to submit)"
                   aria-label="Add case note"
-                  className="flex-1 bg-[#060c08] border border-[#1a281e] focus:border-[#c5f82a]/50 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none transition-colors min-h-[80px]"
+                  className="flex-1 bg-[#060c08] border border-[#1a281e] focus:border-[#c5f82a]/50 rounded-sm p-4 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none transition-colors min-h-[80px]"
                 />
                 <button
                   onClick={addNote}
                   disabled={!note.trim()}
-                  className="px-4 py-3 bg-[#1a281e] hover:bg-[#2a4230] disabled:opacity-40 disabled:cursor-not-allowed border border-[#2a4230] rounded-xl text-[#c5f82a] transition-colors self-start"
+                  className="px-4 py-3 bg-[#1a281e] hover:bg-[#2a4230] disabled:opacity-40 disabled:cursor-not-allowed border border-[#2a4230] rounded-sm text-[#c5f82a] transition-colors self-start"
                 >
                   <Send size={16} />
                 </button>
@@ -393,7 +393,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
               {notes.length > 0 && (
                 <div className="mt-3 space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
                   {notes.map((n, i) => (
-                    <div key={i} className="flex gap-3 p-3 bg-[#0a1a0f]/60 border border-[#1a281e] rounded-xl">
+                    <div key={i} className="flex gap-3 p-3 bg-[#0a1a0f]/60 border border-[#1a281e] rounded-sm">
                       <FileText size={12} className="text-[#c5f82a] mt-0.5 shrink-0" />
                       <div className="flex-1">
                         <div className="text-[11px] text-gray-300">{n.text}</div>
@@ -418,14 +418,14 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
                 <button
                   onClick={resolveCase}
                   disabled={!actionTaken || isSubmitting}
-                  className="flex-1 py-4 rounded-2xl bg-[#c5f82a] text-[#0a110b] font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(197,248,42,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  className="flex-1 py-4 rounded-sm bg-[#c5f82a] text-[#0a110b] font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(197,248,42,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                 >
                   <CheckCircle size={18} />
                   Resolve Case & Close
                 </button>
                 <button
                   onClick={onClose}
-                  className="px-8 py-4 rounded-2xl border border-[#2a4230] text-gray-400 font-bold text-sm hover:bg-white/5 transition-colors"
+                  className="px-8 py-4 rounded-sm border border-[#2a4230] text-gray-400 font-bold text-sm hover:bg-white/5 transition-colors"
                 >
                   Save & Exit
                 </button>
@@ -457,8 +457,8 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
               <div className="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse shadow-[0_0_8px_rgba(251,146,60,0.4)]" />
               <span className="text-orange-400 text-[13px] font-bold font-mono tracking-tighter">14:32 remaining</span>
             </div>
-            <div className="h-2 w-full bg-[#1a281e] rounded-full overflow-hidden">
-              <div className="h-full bg-orange-400 rounded-full shadow-[0_0_10px_rgba(251,146,60,0.2)] transition-all duration-1000" style={{ width: '38%' }} />
+            <div className="h-2 w-full bg-[#1a281e] rounded-none overflow-hidden">
+              <div className="h-full bg-orange-400 rounded-none shadow-[0_0_10px_rgba(251,146,60,0.2)] transition-all duration-1000" style={{ width: '38%' }} />
             </div>
             <div className="text-[10px] text-gray-600 mt-3 font-mono uppercase tracking-widest">P1 · 15min SLA · Starts at claim</div>
           </div>
@@ -468,7 +468,7 @@ const SpecialistDashboard = ({ escalation, onClose, onResolved }) => {
       {/* ── Toast ── */}
       {toast && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[1300] animate-in slide-in-from-bottom-4 fade-in duration-300">
-          <div className={`px-6 py-3 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-3 ${
+          <div className={`px-6 py-3 rounded-sm font-bold text-sm shadow-2xl flex items-center gap-3 ${
             toast.type === 'warn' ? 'bg-orange-400 text-[#1a0a00]' : 'bg-[#c5f82a] text-[#0a110b]'
           }`}>
             <Activity size={16} className="animate-pulse" />

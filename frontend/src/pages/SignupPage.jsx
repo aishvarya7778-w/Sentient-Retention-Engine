@@ -61,14 +61,14 @@ const SignupPage = () => {
       <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#c5f82a]/5 rounded-full blur-[120px] pointer-events-none"></div>
       
       <div className="w-full max-w-md relative animate-in fade-in zoom-in-95 duration-300">
-        <div className="bg-[#0f1712]/90 backdrop-blur-3xl border border-[#1a281e] rounded-[32px] p-10 shadow-2xl">
+        <div className="bg-[#0f1712]/90 backdrop-blur-3xl border border-[#1a281e] rounded-sm p-10 shadow-2xl">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-black text-white tracking-tighter mb-1 uppercase">Initialize <span className="text-[#c5f82a]">Engine</span></h1>
             <p className="text-gray-500 text-[9px] font-bold uppercase tracking-[0.2em] opacity-60">Corporate Node Registration</p>
           </div>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-[10px] font-bold mb-6 flex items-center gap-3">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-sm text-[10px] font-bold mb-6 flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
               {error}
             </div>
@@ -84,7 +84,7 @@ const SignupPage = () => {
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="ACME CORP"
-                  className="w-full bg-[#070c08] border border-[#1a281e] rounded-xl py-3 pl-12 pr-4 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 transition-all font-mono"
+                  className="w-full bg-[#070c08] border border-[#1a281e] rounded-sm py-3 pl-12 pr-4 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 transition-all font-mono"
                   required
                 />
                 <Building2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 group-focus-within:text-[#c5f82a] transition-colors" />
@@ -100,7 +100,7 @@ const SignupPage = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="ADMIN_USER"
-                  className="w-full bg-[#070c08] border border-[#1a281e] rounded-xl py-3 pl-12 pr-4 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 transition-all font-mono"
+                  className="w-full bg-[#070c08] border border-[#1a281e] rounded-sm py-3 pl-12 pr-4 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 transition-all font-mono"
                   required
                 />
                 <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 group-focus-within:text-[#c5f82a] transition-colors" />
@@ -116,7 +116,7 @@ const SignupPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-[#070c08] border border-[#1a281e] rounded-xl py-3 pl-12 pr-4 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 transition-all font-mono"
+                  className="w-full bg-[#070c08] border border-[#1a281e] rounded-sm py-3 pl-12 pr-4 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 transition-all font-mono"
                   required
                 />
                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 group-focus-within:text-[#c5f82a] transition-colors" />
@@ -126,7 +126,7 @@ const SignupPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#c5f82a] text-[#0a110b] font-black text-xs py-4 rounded-xl shadow-lg hover:shadow-[0_0_20px_rgba(197,248,42,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 mt-6 uppercase tracking-wider"
+              className="w-full bg-[#c5f82a] text-[#0a110b] font-black text-xs py-4 rounded-sm shadow-lg hover:shadow-[0_0_20px_rgba(197,248,42,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 mt-6 uppercase tracking-wider"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-[#0a110b]/30 border-t-[#0a110b] rounded-full animate-spin"></div>

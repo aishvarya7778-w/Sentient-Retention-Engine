@@ -171,15 +171,15 @@ const LoginPage = () => {
               transition={{ duration: 2, repeat: Infinity }}
               className="absolute -top-10 left-1/2 -translate-x-1/2 z-20"
             >
-                <div className="bg-[#0f1712] border border-[#c5f82a]/30 p-4 rounded-3xl shadow-2xl backdrop-blur-2xl">
+                <div className="bg-[#0f1712] border border-[#c5f82a]/30 p-4 rounded-sm shadow-2xl backdrop-blur-2xl">
                     <Fingerprint size={28} className="text-[#c5f82a]" />
                 </div>
             </motion.div>
 
-            <div className="bg-[#0f1712]/40 backdrop-blur-3xl border border-white/5 rounded-[48px] p-8 lg:p-12 xl:p-16 shadow-2xl relative overflow-hidden group hover:border-[#c5f82a]/10 transition-colors duration-700">
+            <div className="bg-[#0f1712]/40 backdrop-blur-3xl border border-white/5 rounded-sm p-8 lg:p-12 xl:p-16 shadow-2xl relative overflow-hidden group hover:border-[#c5f82a]/10 transition-colors duration-700">
               {/* Corner Accents */}
-              <div className="absolute top-0 left-0 w-16 h-16 border-t border-l border-[#c5f82a]/10 rounded-tl-[48px]" />
-              <div className="absolute bottom-0 right-0 w-16 h-16 border-b border-r border-[#c5f82a]/10 rounded-br-[48px]" />
+              <div className="absolute top-0 left-0 w-16 h-16 border-t border-l border-[#c5f82a]/10 rounded-tl-sm" />
+              <div className="absolute bottom-0 right-0 w-16 h-16 border-b border-r border-[#c5f82a]/10 rounded-br-sm" />
               
               <div className="absolute top-0 right-0 p-8 opacity-[0.01] pointer-events-none group-hover:opacity-[0.03] transition-opacity duration-700">
                 <Shield size={160} className="text-white" />
@@ -222,7 +222,7 @@ const LoginPage = () => {
                 <motion.div 
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
-                  className="bg-red-500/10 border border-red-500/20 text-red-400 p-5 rounded-2xl text-[10px] font-bold mb-8 flex items-center gap-4"
+                  className="bg-red-500/10 border border-red-500/20 text-red-400 p-5 rounded-sm text-[10px] font-bold mb-8 flex items-center gap-4"
                 >
                   <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444] animate-pulse"></div>
                   {error}
@@ -241,7 +241,7 @@ const LoginPage = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="ID_SECURE_NODE_01"
-                      className="w-full bg-[#070c08] border border-[#1a281e] rounded-2xl py-5 pl-14 pr-6 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 focus:ring-1 focus:ring-[#c5f82a]/20 transition-all font-mono"
+                      className="w-full bg-[#070c08] border border-[#1a281e] rounded-sm py-5 pl-14 pr-6 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 focus:ring-1 focus:ring-[#c5f82a]/20 transition-all font-mono"
                       required
                     />
                     <User size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-700 group-focus-within:text-[#c5f82a] transition-colors" />
@@ -259,7 +259,7 @@ const LoginPage = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full bg-[#070c08] border border-[#1a281e] rounded-2xl py-5 pl-14 pr-6 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 focus:ring-1 focus:ring-[#c5f82a]/20 transition-all font-mono"
+                      className="w-full bg-[#070c08] border border-[#1a281e] rounded-sm py-5 pl-14 pr-6 text-sm text-gray-200 placeholder-gray-800 focus:outline-none focus:border-[#c5f82a]/40 focus:ring-1 focus:ring-[#c5f82a]/20 transition-all font-mono"
                       required
                     />
                     <Lock size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-700 group-focus-within:text-[#c5f82a] transition-colors" />
@@ -271,7 +271,7 @@ const LoginPage = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full ${isAdminPortal ? 'bg-white text-black hover:bg-[#c5f82a]' : 'bg-[#c5f82a] text-[#0a110b]'} font-black text-xs py-5 rounded-2xl transition-all flex items-center justify-center gap-3 mt-12 uppercase tracking-[0.2em] relative overflow-hidden group`}
+                  className={`w-full ${isAdminPortal ? 'bg-white text-black hover:bg-[#c5f82a]' : 'bg-[#c5f82a] text-[#0a110b]'} font-black text-xs py-5 rounded-sm transition-all flex items-center justify-center gap-3 mt-12 uppercase tracking-[0.2em] relative overflow-hidden group`}
                 >
                   <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
                   {isLoading ? (
