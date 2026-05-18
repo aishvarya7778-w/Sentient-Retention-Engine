@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # 🚀 Sentient-Retention Engine
 
 **Autonomous SaaS Churn Defense via Guardrailed Multi-Agent Workflows & High-Fidelity Digital Twins.**
