@@ -1,12 +1,6 @@
 # 🚀 Sentient-Retention Engine
->
-> **Autonomous SaaS Churn Defense via Guardrailed Multi-Agent Workflows & High-Fidelity Digital Twins.**
 
-[![Hackathon Status](https://img.shields.io/badge/Hackathon-International_Grand_Prix-blueviolet?style=for-the-badge&logo=rocket)](https://github.com/satyamraghuvanshi/sentient-retention-engine)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge&logo=opensourceinitiative)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge&logo=githubactions)](https://github.com/satyamraghuvanshi/sentient-retention-engine/actions)
-[![Agent Orchestrator](https://img.shields.io/badge/LangGraph-9_Autonomous_Agents-ff6f61?style=for-the-badge&logo=langchain)](https://github.com/langchain-ai/langgraph)
-[![Database](https://img.shields.io/badge/PostgreSQL-16-blue?style=for-the-badge&logo=postgresql)](https://www.postgresql.org)
+**Autonomous SaaS Churn Defense via Guardrailed Multi-Agent Workflows & High-Fidelity Digital Twins.**
 
 The **Sentient-Retention Engine** is an enterprise-grade, closed-loop AI platform designed to predict, simulate, and prevent customer churn in SaaS environments. By unifying predictive Machine Learning, autonomous multi-agent graphs built on LangGraph, high-fidelity sandbox simulations (Digital Twins), and a zero-trust Governance Guardrail system, SRE ensures that proactively saving high-risk accounts is done safely, dynamically, and transparently.
 
@@ -16,19 +10,52 @@ The **Sentient-Retention Engine** is an enterprise-grade, closed-loop AI platfor
 
 Our web application features a state-of-the-art **Cyber-Brutalist Dashboard** configured with high-contrast layouts, real-time WebSocket streams, dynamic live telemetry tickers, and absolute audit observability.
 
-````carousel
-### 📊 Unified Specialist Dashboard
-![Specialist Workspace](https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80)
-*Real-time workspace for support specialists featuring active telemetry, customer health status, churn threat distributions, and queue management.*
-<!-- slide -->
-### 🛡️ Enterprise Governance Control Center
-![Governance Audit Panel](https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80)
-*Real-time security logs, active agent trust index indicators, policy scope editors, and custom threshold adjustments.*
-<!-- slide -->
-### 🔬 Digital Twin Simulation Sandbox
-![Scenario Testing Simulation](https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=1200&q=80)
-*A high-fidelity environment where agent plans are stress-tested against thousands of user paths to analyze financial impact and ROI before executing.*
-````
+<table width="100%">
+  <thead>
+    <tr>
+      <th width="33%" align="center">📊 Specialist Workspace</th>
+      <th width="33%" align="center">🛡️ Governance Center</th>
+      <th width="33%" align="center">🔬 Digital Twin Sandbox</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td valign="top" align="center">
+        <a href="#1-unified-9-agent-closed-loop-workflow">
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80" width="100%" alt="Specialist Workspace" style="border-radius: 6px; border: 1px solid #222;" />
+        </a>
+        <br/><br/>
+        <img src="https://img.shields.io/badge/Workspace-Active-c5f82a?style=flat-square&logo=react" alt="Workspace Status" />
+        <img src="https://img.shields.io/badge/Data-Real--Time-blue?style=flat-square&logo=socket.io" alt="Data Flow" />
+        <p align="left"><font size="2">Real-time workspace for support specialists featuring active telemetry, customer health status, churn threat distributions, and queue management.</font></p>
+        <hr/>
+        <a href="#1-unified-9-agent-closed-loop-workflow"><strong>💻 Inspect Workspace →</strong></a>
+      </td>
+      <td valign="top" align="center">
+        <a href="#2-enterprise-governance-engine-zero-trust-security">
+          <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80" width="100%" alt="Governance Audit Panel" style="border-radius: 6px; border: 1px solid #222;" />
+        </a>
+        <br/><br/>
+        <img src="https://img.shields.io/badge/Guardrails-Enforced-ff4444?style=flat-square&logo=shield" alt="Guardrail Status" />
+        <img src="https://img.shields.io/badge/Trust_Index-Dynamic-orange?style=flat-square" alt="Trust Rating" />
+        <p align="left"><font size="2">Real-time security logs, active agent trust index indicators, policy scope editors, and custom threshold adjustments.</font></p>
+        <hr/>
+        <a href="#2-enterprise-governance-engine-zero-trust-security"><strong>🛡️ Audit Center →</strong></a>
+      </td>
+      <td valign="top" align="center">
+        <a href="#1-unified-9-agent-closed-loop-workflow">
+          <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=400&q=80" width="100%" alt="Scenario Testing Simulation" style="border-radius: 6px; border: 1px solid #222;" />
+        </a>
+        <br/><br/>
+        <img src="https://img.shields.io/badge/Twin_Simulation-High--Fidelity-8844ff?style=flat-square&logo=dthreejs" alt="Simulation Mode" />
+        <img src="https://img.shields.io/badge/ROI-Optimized-brightgreen?style=flat-square" alt="ROI Tracking" />
+        <p align="left"><font size="2">A high-fidelity environment where agent plans are stress-tested against thousands of user paths to analyze financial impact and ROI before executing.</font></p>
+        <hr/>
+        <a href="#1-unified-9-agent-closed-loop-workflow"><strong>🔬 View Sandbox →</strong></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
