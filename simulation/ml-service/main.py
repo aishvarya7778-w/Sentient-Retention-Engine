@@ -6,14 +6,25 @@ import os
 import time
 from typing import Optional, List
 
-from .config import settings
-from .logger import logger
-from .utils import (
-    preprocess_single_request, 
-    get_feature_names, 
-    get_risk_level, 
-    mock_predict
-)
+try:
+    from .config import settings
+    from .logger import logger
+    from .utils import (
+        preprocess_single_request, 
+        get_feature_names, 
+        get_risk_level, 
+        mock_predict
+    )
+except ImportError:
+    from config import settings
+    from logger import logger
+    from utils import (
+        preprocess_single_request, 
+        get_feature_names, 
+        get_risk_level, 
+        mock_predict
+    )
+
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -135,7 +146,10 @@ async def predict_churn(request: ChurnPredictionRequest):
 @app.post("/train")
 async def train_model():
     try:
-        from .train import train_pipeline
+        try:
+            from .train import train_pipeline
+        except ImportError:
+            from train import train_pipeline
         train_pipeline()
         load_model_artifacts()
         return {"status": "success", "message": "Model retrained successfully"}
@@ -145,4 +159,8 @@ async def train_model():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("ml-service.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)
+    if __package__:
+        app_import = f"{__package__}.main:app"
+    else:
+        app_import = "main:app"
+    uvicorn.run(app_import, host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)
