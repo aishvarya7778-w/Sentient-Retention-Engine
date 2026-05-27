@@ -77,7 +77,7 @@ try {
         },
         @{
             Name = "Agentic AI Orchestrator (LangGraph)"
-            Path = Join-Path $ScriptDir "apps\agentic-ai"
+            Path = Join-Path $ScriptDir "agents"
             Cmd  = "python api/ai_api.py"
             Port = 8002
             Color = "Magenta"
