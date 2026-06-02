@@ -4,381 +4,318 @@
 
 **Autonomous SaaS Churn Defense via Guardrailed Multi-Agent Workflows & High-Fidelity Digital Twins.**
 
-The **Sentient-Retention Engine** is an enterprise-grade, closed-loop AI platform designed to predict, simulate, and prevent customer churn in SaaS environments. By unifying predictive Machine Learning, autonomous multi-agent graphs built on LangGraph, high-fidelity sandbox simulations (Digital Twins), and a zero-trust Governance Guardrail system, SRE ensures that proactively saving high-risk accounts is done safely, dynamically, and transparently.
+The **Sentient-Retention Engine (SRE)** is an enterprise-grade, closed-loop AI platform designed to predict, simulate, and prevent customer churn in SaaS environments. By unifying predictive Machine Learning, autonomous multi-agent graphs built on LangGraph, high-fidelity sandbox simulations (Digital Twins), and a zero-trust Governance Guardrail system, SRE ensures that proactively saving high-risk accounts is done safely, dynamically, and transparently.
+
+## Key Features
+
+- **Unified 9-Agent Workflow**: Observe, Think, Simulate, and Decide dynamically via LangGraph cyclic execution paths.
+- **Enterprise Governance Engine**: Zero-trust security, threshold impact bounds, and dynamic agent trust scoring.
+- **SafeLLM Outage Failover**: Zero-downtime resilient AI architecture falling back from Gemini to Groq in <50ms.
+- **Digital Twin Simulation Sandbox**: High-fidelity environment for stress-testing intervention strategies and calculating ROI.
+- **Cyber-Brutalist Dashboard**: Real-time React 18 UI featuring WebSocket telemetry streams and live agent auditing.
 
 ---
 
-## 🏆 Project Showcase & Live Interfaces
+## Tech Stack
 
-Our web application features a state-of-the-art **Cyber-Brutalist Dashboard** configured with high-contrast layouts, real-time WebSocket streams, dynamic live telemetry tickers, and absolute audit observability.
-
-<table width="100%">
-  <thead>
-    <tr>
-      <th width="33%" align="center">📊 Specialist Workspace</th>
-      <th width="33%" align="center">🛡️ Governance Center</th>
-      <th width="33%" align="center">🔬 Digital Twin Sandbox</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td valign="top" align="center">
-        <a href="#1-unified-9-agent-closed-loop-workflow">
-          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80" width="100%" alt="Specialist Workspace" style="border-radius: 6px; border: 1px solid #222;" />
-        </a>
-        <br/><br/>
-        <img src="https://img.shields.io/badge/Workspace-Active-c5f82a?style=flat-square&logo=react" alt="Workspace Status" />
-        <img src="https://img.shields.io/badge/Data-Real--Time-blue?style=flat-square&logo=socket.io" alt="Data Flow" />
-        <p align="left"><font size="2">Real-time workspace for support specialists featuring active telemetry, customer health status, churn threat distributions, and queue management.</font></p>
-        <hr/>
-        <a href="#1-unified-9-agent-closed-loop-workflow"><strong>💻 Inspect Workspace →</strong></a>
-      </td>
-      <td valign="top" align="center">
-        <a href="#2-enterprise-governance-engine-zero-trust-security">
-          <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80" width="100%" alt="Governance Audit Panel" style="border-radius: 6px; border: 1px solid #222;" />
-        </a>
-        <br/><br/>
-        <img src="https://img.shields.io/badge/Guardrails-Enforced-ff4444?style=flat-square&logo=shield" alt="Guardrail Status" />
-        <img src="https://img.shields.io/badge/Trust_Index-Dynamic-orange?style=flat-square" alt="Trust Rating" />
-        <p align="left"><font size="2">Real-time security logs, active agent trust index indicators, policy scope editors, and custom threshold adjustments.</font></p>
-        <hr/>
-        <a href="#2-enterprise-governance-engine-zero-trust-security"><strong>🛡️ Audit Center →</strong></a>
-      </td>
-      <td valign="top" align="center">
-        <a href="#1-unified-9-agent-closed-loop-workflow">
-          <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=400&q=80" width="100%" alt="Scenario Testing Simulation" style="border-radius: 6px; border: 1px solid #222;" />
-        </a>
-        <br/><br/>
-        <img src="https://img.shields.io/badge/Twin_Simulation-High--Fidelity-8844ff?style=flat-square&logo=dthreejs" alt="Simulation Mode" />
-        <img src="https://img.shields.io/badge/ROI-Optimized-brightgreen?style=flat-square" alt="ROI Tracking" />
-        <p align="left"><font size="2">A high-fidelity environment where agent plans are stress-tested against thousands of user paths to analyze financial impact and ROI before executing.</font></p>
-        <hr/>
-        <a href="#1-unified-9-agent-closed-loop-workflow"><strong>🔬 View Sandbox →</strong></a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+- **Language**: TypeScript/JavaScript (Node.js), Python 3.10+
+- **Frontend**: React 18 with Tailwind CSS v4 and Framer Motion
+- **Backend / Orchestration**: Express.js Gateway, FastAPI, Python LangGraph
+- **Database**: PostgreSQL 15+
+- **Caching & Pub/Sub**: Redis 7
+- **Machine Learning**: scikit-learn (Churn Classification)
+- **Monitoring / Infra**: Docker Compose, Prometheus, Grafana, NGINX
+- **Testing**: Jest, PyTest, Unified Python Audit Pipeline
 
 ---
 
-## 🏗️ End-to-End System Architecture
+## Prerequisites
 
-The Sentient-Retention Engine relies on a multi-tier, event-driven microservices architecture structured around strict data safety, absolute performance, and robust failover guarantees.
+Ensure your local development environment has the following installed:
 
-```mermaid
-flowchart TB
-    subgraph ClientLayer ["1. Presentation Layer (Cyber-Brutalist UI)"]
-        UI["React 18 Dashboard<br/>(Tailwind, Framer Motion, Recharts)"]
-    end
-
-    subgraph OrchestrationLayer ["2. API & Orchestration Gateway"]
-        Gateway["Express Gateway Server<br/>(Node.js / JWT Auth / RBAC)"]
-        WS["WebSocket Server<br/>(Real-Time Telemetry & Broadcasts)"]
-        Locking["Logical Locking / Deduplication<br/>(Active Status Checker)"]
-    end
-
-    subgraph IntelTier ["3. Intelligence Tier & Multi-Agent Loop"]
-        ML["Predictive Churn Service<br/>(scikit-learn Churn Classifier)"]
-        
-        subgraph Graph ["LangGraph Multi-Agent Workflow (Observe -> Think -> Simulate -> Decide)"]
-            StartNode((START))
-            RA["1. RiskAnalysisAgent"]
-            SP["2. StrategyPlanningAgent"]
-            Sim["3. SimulationAgent"]
-            Dec["4. DecisionAgent"]
-            Gov["5. GovernanceEngine<br/>(Composite Risk Assessment)"]
-            Exec["6. ActionAgent<br/>(Automatic Execution)"]
-            Handoff["7. HumanHandoffAgent<br/>(Case Resolution Queue)"]
-            Feed["8. FeedbackLearningAgent"]
-            EndNode(((END)))
-        end
-        
-        subgraph LLM ["Dynamic LLM Infrastructure (SafeLLM Wrapper)"]
-            Primary["Primary LLM<br/>(Gemini Flash/Pro)"]
-            Fallback["Instant Failover LLM<br/>(Groq Llama 3)"]
-        end
-    end
-
-    subgraph SimulationEnv ["4. Simulation Sandbox"]
-        Twin["Digital Twin Engine<br/>(High-Fidelity Strategy Sandbox)"]
-    end
-
-    subgraph PersistenceLayer ["5. Enterprise State & Pub/Sub"]
-        DB[("PostgreSQL Database<br/>(Audit Logs, Trust levels, Telemetry)")]
-        Redis[("Redis Pub/Sub<br/>(Deduplication Cache, Live Feed)")]
-    end
-
-    %% Client and Gateway Hook
-    UI <-->|"JSON API & WebSockets"| Gateway
-    Gateway <--> WS
-    Gateway <--> Locking
-
-    %% Trigger workflows
-    Locking -->|"REST Trigger"| Graph
-    Gateway -->|"Inference Request"| ML
-
-    %% Dynamic Agent Graph Connections
-    StartNode --> RA
-    RA --> SP
-    SP --> Sim
-    Sim --> Dec
-    Dec --> Gov
-    
-    Gov -->|"Validation Passed (Auto-Execute)"| Exec
-    Gov -->|"Limit Exceeded (Specialist Escalate)"| Handoff
-    
-    Exec --> Feed
-    Handoff --> Feed
-    Feed --> EndNode
-
-    %% Digital Twin Interaction
-    Sim <-->|"Stress Test Strategy"| Twin
-    
-    %% SafeLLM Connections
-    Graph <.->|"Resilient Invocation"| LLM
-    LLM -->|"Primary Engine"| Primary
-    LLM -.->|"Instant Fallback (Quota/HTTP Exceeded)"| Fallback
-
-    %% Persistence Hooks
-    Gateway <--> DB
-    Gateway <--> Redis
-    Graph <--> DB
-    Graph <--> Redis
-
-    %% Styling Elements
-    classDef ui fill:#c5f82a,stroke:#000,stroke-width:2px,color:#000,font-weight:bold;
-    classDef gate fill:#222,stroke:#c5f82a,stroke-width:2px,color:#fff;
-    classDef agent fill:#111,stroke:#666,stroke-width:1.5px,color:#eee;
-    classDef failover fill:#ff4444,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
-    classDef db fill:#0052cc,stroke:#fff,stroke-width:1.5px,color:#fff;
-    classDef twin fill:#8844ff,stroke:#fff,stroke-dasharray: 5 5,color:#fff;
-
-    class UI ui;
-    class Gateway,WS,Locking gate;
-    class RA,SP,Sim,Dec,Gov,Exec,Handoff,Feed agent;
-    class Gov,LLM,Fallback failover;
-    class DB,Redis db;
-    class Twin twin;
-```
+- **Node.js** (v20.x or higher)
+- **Python** (v3.10.x or higher, with `pip` and `virtualenv`)
+- **Docker Desktop** (v4.0+ for running the full containerized stack)
+- **PostgreSQL 15+** and **Redis** (If running manually outside of Docker)
 
 ---
 
-## ✨ Cutting-Edge Platform Features
+## Getting Started
 
-### 1. Unified 9-Agent Closed-Loop Workflow
+You can launch the platform using either our one-click Docker orchestration or manually via our interactive PowerShell script for deep development.
 
-The brain of SRE is structured around a highly observable **LangGraph workflow** that drives context-aware client preservation:
+### Method 1: Setup via Docker Compose (Recommended)
 
-* **Observe**: Telemetry and churn predictions are ingested.
-* **Think**: Historical save success scores and model features are compared.
-* **Simulate**: Plans are dynamically tested in a virtual sandbox environment.
-* **Decide**: The optimal, high-ROI mitigation mechanism is selected.
-
-### 2. Enterprise Governance Engine (Zero-Trust Security)
-
-To protect corporate resources, agents do not have direct permission to issue discounts or modify records. SRE enforces a hybrid protection protocol:
-
-* **Tool-Level Restrictions**: Strictly checks agent capabilities against whitelist/blacklist directives.
-* **Impact-Level Constraints**: Pauses any discount exceeding financial ceilings (`$500.00`) or involving enterprise contracts, instantly routing the action to human operators.
-* **Dynamic Trust Scoring**: Adjusts individual agent trust indexes dynamically based on execution compliance, applying mathematical decay on warnings and slow recoveries for reliable behavior.
-
-### 3. SafeLLM: Zero-Downtime Instant LLM Failover
-
-To bulletproof our system against third-party API outages, rate limits, or quota overruns, we built a custom wrapper that acts as an exact duck-typed proxy of standard LangChain LLMs:
-
-* **Primary Path**: Sends queries to Gemini (Flash/Pro) for cost-efficient reasoning.
-* **Fallback Path**: If a rate limit, timeout, or HTTP standard exception occurs, it seamlessly intercepts the call, fires an alert webhook, writes a warning to the `governance_audit_logs`, and completes the reasoning thread on Groq (Llama 3) in under **50ms**.
-
-### 4. Background Concurrency & Deduplication Safeguards
-
-SRE implements a fail-safe, logical lock inside the API layer:
-
-* **Deduplication Check**: Ensures that only one active retention pipeline runs per user at any time, blocking concurrent duplicate API triggers and saving valuable tokens.
-* **Axios Graceful Degradation**: If the AI services are down, the Express gateway catches the failure, creates a `FAILED_AUTO_TRIGGER` database record, registers the failure telemetry, and broadcasts an alert to the dashboard.
-
----
-
-## 🛠️ Technology Stack
-
-| Platform Domain | Technology Choices | Rationale |
-| :--- | :--- | :--- |
-| **Frontend Framework** | **React 18** | Ultra-responsive state reconciliation. |
-| **Styling Paradigm** | **Tailwind CSS v4** | CSS-first custom configuration, Brutalist theme tokens. |
-| **Animation Core** | **Framer Motion** | Dynamic visual cues and micro-interactions for agent status. |
-| **Gateway/Backend** | **Node.js / Express** | Event-driven architecture, high concurrency support. |
-| **AI Orchestration** | **Python / LangGraph** | Multi-agent state preservation, cyclic execution paths. |
-| **Databases** | **PostgreSQL / Redis** | Hard relational persistence with fast Pub/Sub capabilities. |
-| **APIs / Models** | **FastAPI / scikit-learn** | High-performance endpoints, optimized risk scoring. |
-
----
-
-## 🚦 Getting Started (Local Development Setup)
-
-### 📋 Prerequisites
-
-Ensure your local development environment has the following software installed:
-
-* **Node.js** v20.x or higher
-* **Python** v3.10.x or higher (with `pip` and `virtualenv`)
-* **PostgreSQL** v15+ (with access credentials)
-* **Redis** (Optional for local pub-sub, mock database fallback available)
-
----
-
-### 🐳 Setup via Docker Compose (Recommended)
-
-You can launch the entire, fully connected stack (Frontend, Backend, AI Service, Database) using a single command:
+Run the entire fully connected stack (Frontend, Backend, AI Services, Databases, Monitoring) with a single command:
 
 ```bash
-docker-compose up --build
-```
-
-Once initialized, access the interfaces at:
-
-* 🖥️ **React Dashboard**: [http://localhost:3000](http://localhost:3000)
-* ⚙️ **Express Gateway**: [http://localhost:5000](http://localhost:5000)
-* 🧠 **FastAPI AI Server**: [http://localhost:8000/docs](http://localhost:8000/docs)
-
----
-
-### 💻 Manual Setup
-
-#### Step 1: Clone the Project
-
-```bash
+# 1. Clone the repository
 git clone https://github.com/raghuvanshi-sec/Sentient-Retention-Engine.git
 cd Sentient-Retention-Engine
+
+# 2. Build and launch all services
+docker-compose up --build -d
 ```
 
-#### Step 2: Configure Environment Variables
+Once initialized, access the interfaces:
 
-Copy and configure the `.env` settings across all services:
+- 🖥️ **React Dashboard**: [http://localhost:3000](http://localhost:3000)
+- ⚙️ **Express Gateway**: [http://localhost:8000](http://localhost:8000)
+- 🧠 **FastAPI AI Server**: [http://localhost:8002](http://localhost:8002)
+- 📊 **Grafana Monitoring**: [http://localhost:3001](http://localhost:3001)
 
-##### Backend Configuration (`apps/backend/.env`)
+### Method 2: Manual Setup & `start-dev.ps1` Orchestrator
 
-```env
-PORT=5000
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sre_db
-JWT_SECRET=super_secure_hackathon_token
-REDIS_URL=redis://localhost:6379
-PREDICTION_SERVICE_URL=http://localhost:8000
-AGENTIC_AI_SERVICE_URL=http://localhost:8000
-```
-
-##### AI & Agentic Service Configuration (`apps/agentic-ai/.env`)
-
-```env
-PORT=8000
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sre_db
-GOOGLE_API_KEY=your_gemini_api_key
-GROQ_API_KEY=your_groq_api_key
-```
-
-##### Frontend Configuration (`apps/frontend/.env`)
-
-```env
-VITE_API_URL=http://localhost:5000
-VITE_WS_URL=ws://localhost:5000
-```
-
----
-
-#### Step 3: Run Database Migrations & Seeding
-
-In your terminal, navigate to the backend workspace directory and run setup commands:
+For active development, our intelligent PowerShell script handles dependency checks, port cleanup, and unified logging.
 
 ```bash
-cd apps/backend
-npm install
-# Setup PostgreSQL schema and seed test data
-npm run db:setup
-```
+# 1. Clone and enter the repository
+git clone https://github.com/raghuvanshi-sec/Sentient-Retention-Engine.git
+cd Sentient-Retention-Engine
 
-#### Step 4: Launch Services Independently
+# 2. Install dependencies for all Node.js workspaces
+npm install --prefix backend
+npm install --prefix frontend
+npm install --prefix shared
 
-##### Terminal 1: Express Backend
-
-```bash
-cd apps/backend
-npm run dev
-```
-
-##### Terminal 2: FastAPI AI Engine
-
-```bash
-cd apps/agentic-ai
-# Create and activate virtual environment
+# 3. Setup Python Virtual Environments
+cd agents
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Or `.\venv\Scripts\activate` on Windows
 pip install -r requirements.txt
-python api/ai_api.py
+cd ..
+
+cd simulation/ml-service
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cd ../..
+
+# 4. Copy the environment variables
+cp backend/.env.example backend/.env
+cp agents/.env.example agents/.env
+cp frontend/.env.example frontend/.env
+cp simulation/ml-service/.env.example simulation/ml-service/.env
+
+# 5. Launch the orchestrator script (Windows PowerShell)
+.\start-dev.ps1
 ```
 
-##### Terminal 3: React Dashboard Page
-
-```bash
-cd apps/frontend
-npm install
-npm run dev
-```
+The orchestrator will provide an interactive command center to monitor all services in one terminal window.
 
 ---
 
-## 🔬 Test Suite & Quality Gates
+## Architecture
 
-Our codebase features rigorous, priority-ordered automated tests checking every boundary and failure scenario:
+### Directory Structure
 
-### 1. Express Backend Tests
+```mermaid
+flowchart LR
+    classDef dir fill:#222,stroke:#666,stroke-width:1px,color:#fff;
+    classDef file fill:#111,stroke:#444,stroke-width:1px,color:#ccc;
+    
+    Root["📂 Sentient-Retention-Engine"]:::dir
+    
+    Root --> Agents["📂 agents/ (LangGraph AI Engine)"]:::dir
+    Agents --> AgApi["📂 api/ (FastAPI)"]:::dir
+    Agents --> AgCore["📂 core/ (Nodes & State)"]:::dir
+    Agents --> AgDT["📂 digital-twin/ (Simulations)"]:::dir
+    Agents --> AgTools["📂 tools/ (Agent Capabilities)"]:::dir
+    
+    Root --> Backend["📂 backend/ (Node/Express API Gateway)"]:::dir
+    Backend --> BkSrc["📂 src/ (Controllers & Routes)"]:::dir
+    Backend --> BkLogs["📂 logs/ (Audit Traces)"]:::dir
+    
+    Root --> Frontend["📂 frontend/ (React 18 Dashboard)"]:::dir
+    Frontend --> FrSrc["📂 src/ (Components & Pages)"]:::dir
+    
+    Root --> Gov["📂 governance/ (Cross-platform Policies)"]:::dir
+    
+    Root --> Infra["📂 infra/ (Docker & NGINX)"]:::dir
+    Infra --> InfDb["📂 database/ (PostgreSQL Schemas)"]:::dir
+    Infra --> InfMon["📂 monitoring/ (Prometheus & Grafana)"]:::dir
+    
+    Root --> Obs["📂 observability/ (Telemetry Tools)"]:::dir
+    Root --> Sec["📂 security/ (RBAC Rules)"]:::dir
+    Root --> Shared["📂 shared/ (Common Schemas)"]:::dir
+    
+    Root --> Sim["📂 simulation/"]:::dir
+    Sim --> SimML["📂 ml-service/ (scikit-learn Predictor)"]:::dir
+    
+    Root --> StartDev["📄 start-dev.ps1 (Dev Orchestrator)"]:::file
+```
 
-Validates the predictions, locks, status checks, Axios failovers, and websocket integrations.
+### End-to-End Request Lifecycle
+
+1. **Observe (Gateway & Frontend):** User telemetry data flows into the Express gateway.
+2. **Predict (ML Service):** The Node backend queries the `ml-service` to calculate real-time churn risk.
+3. **Orchestrate (Agentic Engine):** If a high risk is detected, the event fires into the LangGraph network (`agents/core/workflow.py`).
+4. **Graph Execution:**
+   - **RiskAnalysisAgent** evaluates historical context.
+   - **StrategyPlanningAgent** formulates action options.
+   - **SimulationAgent** calls the digital twin sandbox to measure ROI.
+   - **DecisionAgent** selects the optimal route.
+   - **GovernanceEngine** cross-checks policies (e.g. max discount limits).
+   - **ActionExecutionAgent** triggers the backend to apply the fix, OR hands off to human operators via WebSocket streams if out of bounds.
+5. **Persist & Telemetry:** All states and decisions are logged into PostgreSQL and broadcasted back to the React UI via Redis Pub/Sub.
+
+### Database Schema Highlights
+
+The system relies on PostgreSQL 15+. Core tables include:
+
+- `users`: Core customer demographic and account health scores.
+- `churn_predictions`: Historical time-series record of ML predicted churn risks.
+- `agent_memory`: Long-term tracking of autonomous interventions and resulting outcomes.
+- `governance_audit_logs`: Detailed tracking of agent rule validations and blocks.
+- `agent_trust_levels`: Tracks live mathematical confidence scores (0.0 to 1.0) applied to every agent entity.
+- `approval_requests`: Pending interventions that exceeded autonomous governance bounds and require a human click.
+
+---
+
+## Environment Variables
+
+Copy `.env.example` files across the workspace. **Do NOT place sensitive keys in Git.**
+
+### Backend (`backend/.env`)
+
+| Variable | Description | Example |
+
+| `PORT` | API Gateway Port | `8000` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:postgres@localhost:5432/sre_db` |
+| `REDIS_URL` | Redis pub-sub endpoint | `redis://localhost:6379` |
+| `JWT_SECRET` | Secret for RBAC Auth generation | `your_secure_jwt_secret` |
+
+### Agentic AI (`agents/.env`)
+
+| Variable | Description | Example |
+
+| `DATABASE_URL` | Database for agent persistence | `postgresql://postgres:postgres@localhost:5432/sre_db` |
+| `GOOGLE_API_KEY` | Primary SafeLLM Provider Key | `your_google_api_key_here` |
+| `GROQ_API_KEY` | Fallback SafeLLM Provider Key | `your_groq_api_key_here` |
+
+### Frontend (`frontend/.env`)
+
+| Variable | Description | Example |
+
+| `VITE_API_URL` | Base URL for REST requests | `http://localhost:8000/api/v1` |
+| `VITE_WS_URL` | WebSocket URL for live telemetry | `ws://localhost:8000` |
+
+---
+
+## Available Scripts
+
+### Development & Orchestration
+
+| Command | Description |
+
+| `.\start-dev.ps1` | Interactive PowerShell dev center. Spawns, monitors, and cleans all 4 active services safely. |
+| `docker-compose up` | Launches the complete production-like stack. |
+
+### Backend (`/backend`)
+
+| Command | Description |
+
+| `npm run dev` | Start Express with nodemon watch mode |
+| `npm run db:setup` | Seeds the database and creates essential tables |
+| `npm run test` | Run API integrations and fallback logic tests |
+
+### Unified Audit Pipeline (`/`)
+
+| Command | Description |
+
+| `python .agent/scripts/checklist.py .` | Rigorous, multi-gate security, linting, testing, and schema audit. Required before commits. |
+
+---
+
+## Testing
+
+SRE features a highly rigorous, priority-ordered testing framework validating AI failsafes and logical boundaries.
+
+### Express Backend Tests
+
+Validates logical locks, RBAC, deduplication, and graceful LLM degradation API handling.
 
 ```bash
-cd apps/backend
+cd backend
 npm run test
 ```
 
-* **Outcome**: `3/3 Tests Passed` (Success paths, logical locks, and graceful degradation fallback validation completely passing).
+### FastAPI & SafeLLM Fallback Tests
 
-### 2. FastAPI AI Provider Tests
-
-Validates the dynamic `SafeLLM` failovers and LLM proxy implementations.
+Validates that our custom LLM provider instantly shifts workloads to Groq when Gemini yields simulated rate limits.
 
 ```bash
-cd apps/agentic-ai
+cd agents
 python -m unittest core/test_llm_failover.py
 ```
 
-* **Outcome**: `3/3 Tests Passed` (Ensures Groq takes over in <50ms when Gemini suffers artificial outages).
+### Full Workspace Audits
 
-### 3. Unified Developer Checklist Audit
-
-We validate the entire ecosystem before deployment using our strict multi-gate audit pipeline:
+Our custom multi-agent Python auditing framework will test the entire workspace context.
 
 ```bash
 python .agent/scripts/checklist.py .
 ```
 
-* Checks performed: **Security Vulnerabilities (OWASP), Code Linting, Database Schema Alignment, Unit Testing Coverage.**
+---
+
+## Deployment
+
+### Containerization (Docker)
+
+The primary deployment path uses the provided `docker-compose.yml` which wires the internal Docker network (`sentient-network`), ensuring agents, web, and DB securely interconnect.
+
+```bash
+docker-compose up --build -d
+```
+
+All ports bind mapped correctly. Ensure you override placeholder `.env` files dynamically in your CI/CD tool.
+
+### Manual / VPS Deployment
+
+1. Set up a Linux VM (e.g. Ubuntu 22.04 LTS).
+2. Install `Nginx`, `PostgreSQL 15`, `Redis`, `Node.js 20`, and `Python 3.10`.
+3. Configure PostgreSQL databases.
+4. Clone and run `npm install` and `pip install -r requirements.txt`.
+5. Run the services via `systemd` or `pm2`.
+6. Configure `infra/nginx/nginx.conf` and secure it with certbot.
 
 ---
 
-## 🛠️ Observability & Dashboards
+## Troubleshooting
 
-To make SRE's internal thought process 100% visible, the React dashboard integrates comprehensive charts:
+### Port Already In Use
 
-* **Confidence Visualizer**: Track agent decision confidence scores per recommendation.
-* **Telemetry Audit Stream**: Watch live telemetry events broadcast directly via WebSockets.
-* **Agent Trust Scores Chart**: View compliance history and current trust index allocations in real-time.
+**Error:** `Port 3000 in use` (or 8000/8001)
+**Solution:**
+If using `start-dev.ps1`, the script has an auto-cleanup block that forcefully kills ghost processes keeping the ports open. If using docker, run `docker-compose down -v` to kill hanging networking maps.
+
+### LLM Rate Limits Triggering Instantly
+
+**Error:** Backend reports failure during execution.
+**Solution:**
+Ensure you have set `GOOGLE_API_KEY` and `GROQ_API_KEY` in `agents/.env`. If the primary fails, the fallback only works if the secondary key is configured properly.
+
+### Missing Tables or Schema Errors
+
+**Error:** PostgreSQL `relation does not exist`
+**Solution:**
+If not using Docker volumes, ensure the DB is properly created and migrated:
+
+```bash
+cd backend
+npm run db:setup
+```
+
+Alternatively, execute the contents of `infra/database/schema.sql` directly into your Postgres instance.
 
 ---
 
-## 📄 Licensing & Hackathon Credits
+## Contributing
+
+We welcome contributions! Please follow our established AI Governance Guardrail rules. Any agent logic modification must not bypass the `GovernanceEngine`.
+Before submitting pull requests, run `python .agent/scripts/checklist.py .` to ensure 100% security and schema compliance.
+
+## License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
-
-Developed with ❤️ for the International AI & Automation Hackathon by:
-
-* **Satyam Raghuvanshi** ([raghuvanshi-sec](https://github.com/raghuvanshi-sec)) — *Systems Engineering, Express Gateway, Security & Database Architectures*
-* **Warth-Of-CodeGod** — *LangGraph Orchestration, Simulation Design, and React Frontend development*
-* **Shimant Ranjan** — *Lead Machine Learning Engineer & Digital Twin Architect (scikit-learn Predictive Churn Classifier, Scenario Sandbox Stress-Testing, and ROI Predictive Modelling)*
-* **Saksham Jaiswal** — *Database Engineer & High-Performance Scaling Architect (PostgreSQL Schema Optimization, Redis Pub/Sub Caching, and Real-Time Event Telemetry Channels)*
