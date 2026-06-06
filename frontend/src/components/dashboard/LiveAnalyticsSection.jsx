@@ -4,6 +4,7 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, Legend
 } from 'recharts';
 import { AuditLogTable } from './DashboardComponents';
+import RevenueProtectionTimeline from './RevenueProtectionTimeline';
 
 const LiveAnalyticsSection = ({ data, auditLogs = [], searchTerm = '', onSearch = () => {} }) => {
   const { churnTrend, segmentDistribution, retentionImpact } = data;
@@ -159,6 +160,11 @@ const LiveAnalyticsSection = ({ data, auditLogs = [], searchTerm = '', onSearch 
             </ResponsiveContainer>
           </div>
         </div>
+      </div>
+
+      {/* Revenue Protection Timeline Integration */}
+      <div className="mb-6">
+        <RevenueProtectionTimeline />
       </div>
 
       {/* Audit Log Table Integration */}

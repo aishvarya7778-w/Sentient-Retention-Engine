@@ -4,7 +4,8 @@ import {
   Users, AlertCircle, Shield, ChevronRight, Search, Filter, 
   RefreshCcw, CheckCircle, Clock, MoreVertical, LayoutGrid, 
   List, Activity, ArrowRight, UserCheck, MessageSquare, ArrowLeft,
-  Bell, Settings, HelpCircle, LogOut, Plus, Gavel, History, ShieldAlert
+  Bell, Settings, HelpCircle, LogOut, Plus, Gavel, History, ShieldAlert,
+  Heart, DollarSign, TrendingUp, Zap, CheckSquare, Square, Check, AlertTriangle, Target
 } from 'lucide-react';
 import { useDashboardData } from '../../hooks/useDashboardData';
 import SpecialistDashboard from '../Dashboard/SpecialistDashboard';
@@ -13,6 +14,7 @@ import config from '../../config';
 import apiClient from '../../services/apiClient';
 import { useNavigate, useLocation } from 'react-router-dom';
 import GovernanceView from './GovernanceView';
+import CustomerSuccessView from './CustomerSuccessView';
 
 const AdminManagementDashboard = () => {
   const navigate = useNavigate();
@@ -47,6 +49,118 @@ const AdminManagementDashboard = () => {
   const [govView, setGovView] = useState('approvals'); // 'approvals', 'logs', 'policies'
   const [governancePolicies, setGovernancePolicies] = useState([]);
   const [agentTrustLevels, setAgentTrustLevels] = useState([]);
+
+  // Customer Success Command Center State
+  const [csCustomers, setCsCustomers] = useState([
+    {
+      id: "cs-101",
+      name: "Acme Corp",
+      domain: "acme.com",
+      healthScore: 42,
+      revenueExposure: 120000,
+      churnProbability: 0.78,
+      priority: "Critical",
+      recommendedAction: "Upgrade SLAs & schedule executive briefing",
+      interventionStatus: "Pending Action",
+      contactPerson: "Jane Doe (VP of Infrastructure)",
+      lastActive: "2 hours ago"
+    },
+    {
+      id: "cs-102",
+      name: "Cyberdyne Systems",
+      domain: "cyberdyne.io",
+      healthScore: 35,
+      revenueExposure: 250000,
+      churnProbability: 0.89,
+      priority: "Critical",
+      recommendedAction: "Deploy customer retention specialist immediately",
+      interventionStatus: "Escalated",
+      contactPerson: "Miles Dyson (Director of AI)",
+      lastActive: "1 day ago"
+    },
+    {
+      id: "cs-103",
+      name: "Initech LLC",
+      domain: "initech.com",
+      healthScore: 58,
+      revenueExposure: 45000,
+      churnProbability: 0.62,
+      priority: "High",
+      recommendedAction: "Launch email campaign for onboarding re-engagement",
+      interventionStatus: "Pending Action",
+      contactPerson: "Peter Gibbons (Engineering Lead)",
+      lastActive: "3 days ago"
+    },
+    {
+      id: "cs-104",
+      name: "Stark Industries",
+      domain: "starkindustries.com",
+      healthScore: 71,
+      revenueExposure: 500000,
+      churnProbability: 0.45,
+      priority: "Medium",
+      recommendedAction: "Offer custom integration package",
+      interventionStatus: "Success Plan Created",
+      contactPerson: "Pepper Potts (CEO)",
+      lastActive: "4 hours ago"
+    },
+    {
+      id: "cs-105",
+      name: "Hooli Inc",
+      domain: "hooli.xyz",
+      healthScore: 22,
+      revenueExposure: 380000,
+      churnProbability: 0.94,
+      priority: "Critical",
+      recommendedAction: "Schedule urgent executive outreach call",
+      interventionStatus: "Outreach Scheduled",
+      contactPerson: "Gavin Belson (Founder)",
+      lastActive: "30 minutes ago"
+    },
+    {
+      id: "cs-106",
+      name: "Tyrell Corporation",
+      domain: "tyrell.io",
+      healthScore: 64,
+      revenueExposure: 180000,
+      churnProbability: 0.51,
+      priority: "Medium",
+      recommendedAction: "Send technical review report",
+      interventionStatus: "Pending Action",
+      contactPerson: "Eldon Tyrell (Chief Architect)",
+      lastActive: "12 hours ago"
+    },
+    {
+      id: "cs-107",
+      name: "Wayne Enterprises",
+      domain: "waynecorp.com",
+      healthScore: 82,
+      revenueExposure: 750000,
+      churnProbability: 0.28,
+      priority: "Low",
+      recommendedAction: "Routine quarterly success check-in",
+      interventionStatus: "Pending Action",
+      contactPerson: "Lucius Fox (COO)",
+      lastActive: "2 days ago"
+    },
+    {
+      id: "cs-108",
+      name: "Umbrella Corp",
+      domain: "umbrellacorp.net",
+      healthScore: 15,
+      revenueExposure: 320000,
+      churnProbability: 0.97,
+      priority: "Critical",
+      recommendedAction: "Trigger high-risk response protocol",
+      interventionStatus: "Pending Action",
+      contactPerson: "Albert Wesker (Head of Bio-Security)",
+      lastActive: "5 days ago"
+    }
+  ]);
+  const [selectedCsIds, setSelectedCsIds] = useState([]);
+  const [csSearchQuery, setCsSearchQuery] = useState('');
+  const [csPriorityFilter, setCsPriorityFilter] = useState('All');
+  const [csStatusFilter, setCsStatusFilter] = useState('All');
 
   const user = JSON.parse(localStorage.getItem('sre_user') || '{}');
 
@@ -292,6 +406,12 @@ const AdminManagementDashboard = () => {
                 onClick={() => setActiveSubTab('ops')} 
               />
               <NavItem 
+                icon={Target} 
+                label="CS Command Center" 
+                active={activeSubTab === 'cs'} 
+                onClick={() => setActiveSubTab('cs')} 
+              />
+              <NavItem 
                 icon={ArrowLeft} 
                 label="Live Dashboard" 
                 onClick={() => navigate('/dashboard')} 
@@ -397,6 +517,7 @@ const AdminManagementDashboard = () => {
           <div>
             <h1 className="text-2xl font-bold text-white font-display tracking-tight">
               {activeSubTab === 'ops' ? 'Escalation Management' : 
+               activeSubTab === 'cs' ? 'CS Command Center' :
                activeSubTab === 'team' ? 'Team Control' :
                activeSubTab === 'health' ? 'System Telemetry' : 
                activeSubTab === 'governance' ? 'Governance Oversight' :
@@ -404,6 +525,7 @@ const AdminManagementDashboard = () => {
             </h1>
             <p className="text-[10px] text-white/40 mt-1 uppercase tracking-[0.15em] font-display font-medium">
               {activeSubTab === 'ops' ? 'Manual Intervention Pipeline' : 
+               activeSubTab === 'cs' ? 'At-Risk Accounts & Proactive Intervention' :
                activeSubTab === 'team' ? 'Specialist Roster & Performance' :
                activeSubTab === 'health' ? 'Real-time Infrastructure Monitoring' : 
                activeSubTab === 'governance' ? 'AI Agent Permissions & Authorization' :
@@ -597,6 +719,21 @@ const AdminManagementDashboard = () => {
                   </div>
                 )}
               </>
+            )}
+
+            {activeSubTab === 'cs' && (
+              <CustomerSuccessView 
+                csCustomers={csCustomers}
+                setCsCustomers={setCsCustomers}
+                selectedCsIds={selectedCsIds}
+                setSelectedCsIds={setSelectedCsIds}
+                csSearchQuery={csSearchQuery}
+                setCsSearchQuery={setCsSearchQuery}
+                csPriorityFilter={csPriorityFilter}
+                setCsPriorityFilter={setCsPriorityFilter}
+                csStatusFilter={csStatusFilter}
+                setCsStatusFilter={setCsStatusFilter}
+              />
             )}
 
             {activeSubTab === 'team' && (
