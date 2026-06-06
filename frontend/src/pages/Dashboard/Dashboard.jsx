@@ -12,6 +12,7 @@ import SpecialistDashboard from './SpecialistDashboard';
 import { useDashboardData } from '../../hooks/useDashboardData';
 import LiveAnalyticsSection from '../../components/dashboard/LiveAnalyticsSection';
 import { AIReasoningPanel } from '../../components/dashboard/AIReasoningPanel';
+import IntegrationsCenter from '../../components/dashboard/IntegrationsCenter';
 import {
   KPICard, DonutChart, BarChart, Heatmap, ModelCard, FeatureImportance,
   EscalationCard, EscalationDetailsModal, ChainOfThoughtTerminal, AuditLogTable,
@@ -218,7 +219,7 @@ const Dashboard = ({ isAdminView = false }) => {
 
     const safeScale = Math.max(globalScale, 0.1);
     const fontSize = 8 / safeScale;
-    ctx.font = `${fontSize}px Sans-Serif`;
+    ctx.font = `${fontSize}px "Plus Jakarta Sans", Sans-Serif`;
     ctx.textAlign = 'center';
     ctx.fillStyle = isActive ? '#ffffff' : '#4c6b35';
     ctx.fillText(node.name || node.id, node.x, node.y + size + fontSize + 2);
@@ -265,7 +266,7 @@ const Dashboard = ({ isAdminView = false }) => {
     ctx.stroke();
 
     const fontSize = (isActive ? 14 : 11) / safeScale;
-    ctx.font = `${isActive ? 'bold' : 'normal'} ${fontSize}px Inter, Sans-Serif`;
+    ctx.font = `${isActive ? 'bold' : 'normal'} ${fontSize}px "Plus Jakarta Sans", Sans-Serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = isActive ? '#000000' : (isSelected || isHovered ? '#c5f82a' : '#4c6b35');
@@ -277,6 +278,7 @@ const Dashboard = ({ isAdminView = false }) => {
     { name: 'Neural Topology', icon: Share2, id: 'Pipeline' },
     { name: 'Observability', icon: Activity, id: 'Analytics' },
     { name: 'Action Center', icon: AlertOctagon, id: 'Escalations' },
+    { name: 'Integrations', icon: Building2, id: 'Integrations' },
   ];
 
   return (
@@ -963,6 +965,10 @@ const Dashboard = ({ isAdminView = false }) => {
                 </div>
               </div>
             </div>
+          )}
+
+          {activeTab === 'Integrations' && (
+            <IntegrationsCenter activeWorkspace={activeWorkspace} />
           )}
         </div>
 

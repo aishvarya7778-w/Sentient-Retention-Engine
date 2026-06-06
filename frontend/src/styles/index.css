@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Bebas+Neue&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -66,7 +66,7 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.01em;
@@ -75,7 +75,7 @@
   }
   
   h1, h2, h3, h4, .font-display, .section-header { 
-    font-family: 'Bebas Neue', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 400;
     letter-spacing: 0.04em;
     line-height: 0.95;
@@ -90,7 +90,7 @@
   h4 { font-size: clamp(1.1rem, 2.5vw, 1.3rem); letter-spacing: 0.08em; }
 
   p, .font-sans { 
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 0.9375rem; 
     line-height: 1.6; 
     color: var(--text-dim);
@@ -103,11 +103,11 @@
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--text-muted);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
   .text-value {
-    font-family: 'Bebas Neue', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-weight: 400;
     letter-spacing: 0.06em;
   }
@@ -139,7 +139,7 @@
     background-size: 200% 100%;
     animation: iris-shift 8s ease-in-out infinite;
   }
-  .italic-serif { font-family: 'Inter', sans-serif; font-style: normal; font-weight: 500; }
+  .italic-serif { font-family: 'Plus Jakarta Sans', sans-serif; font-style: normal; font-weight: 500; }
   .border-faint { border-color: hsl(0 0% 100% / 0.08); }
   
   .glass-card {

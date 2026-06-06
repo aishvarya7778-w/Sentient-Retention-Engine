@@ -12,6 +12,14 @@ Usage:
 
 import os
 import sys
+
+# Ensure UTF-8 output on Windows terminal
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except AttributeError:
+        pass
 import time
 import json
 import signal
@@ -35,18 +43,22 @@ def is_running(pid):
 
 def get_start_command(root):
     pkg_file = root / "package.json"
+    cwd = root
     if not pkg_file.exists():
-        return None
+        pkg_file = root / "frontend" / "package.json"
+        cwd = root / "frontend"
+        if not pkg_file.exists():
+            return None, None
     
     with open(pkg_file, 'r') as f:
         data = json.load(f)
     
     scripts = data.get("scripts", {})
     if "dev" in scripts:
-        return ["npm", "run", "dev"]
+        return ["npm", "run", "dev"], cwd
     elif "start" in scripts:
-        return ["npm", "start"]
-    return None
+        return ["npm", "start"], cwd
+    return None, None
 
 def start_server(port=3000):
     if PID_FILE.exists():
@@ -59,7 +71,7 @@ def start_server(port=3000):
             pass # Invalid PID file
 
     root = get_project_root()
-    cmd = get_start_command(root)
+    cmd, run_cwd = get_start_command(root)
     
     if not cmd:
         print("❌ No 'dev' or 'start' script found in package.json")
@@ -74,7 +86,7 @@ def start_server(port=3000):
     with open(LOG_FILE, "w") as log:
         process = subprocess.Popen(
             cmd,
-            cwd=str(root),
+            cwd=str(run_cwd),
             stdout=log,
             stderr=log,
             env=env,

@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Shield, Lock, LogOut } from "lucide-react";
 
 export const Nav = () => {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
   const [time, setTime] = useState("");
   useEffect(() => {
     const update = () => {
@@ -21,8 +23,23 @@ export const Nav = () => {
         ◐ SENTIENT<span className="italic-serif font-normal">/engine</span>
       </Link>
       <div className="hidden md:flex items-center gap-10 font-mono text-xs uppercase tracking-[0.2em]">
-        <a href="#pipeline" className="hover:text-iris transition-colors">Pipeline</a>
-        <a href="#capabilities" className="hover:text-iris transition-colors">Capabilities</a>
+        {isHome ? (
+          <a href="#pipeline" className="hover:text-iris transition-colors" data-cursor>Pipeline</a>
+        ) : (
+          <Link to="/#pipeline" className="hover:text-iris transition-colors" data-cursor>Pipeline</Link>
+        )}
+        {isHome ? (
+          <a href="#capabilities" className="hover:text-iris transition-colors" data-cursor>Capabilities</a>
+        ) : (
+          <Link to="/#capabilities" className="hover:text-iris transition-colors" data-cursor>Capabilities</Link>
+        )}
+        <Link 
+          to="/pricing" 
+          className={`hover:text-iris transition-colors ${location.pathname === '/pricing' ? 'text-[#c5f82a] border-b border-[#c5f82a]/50' : ''}`}
+          data-cursor
+        >
+          Pricing
+        </Link>
         {localStorage.getItem('sre_token') ? (
           <div className="flex items-center gap-4">
             <Link 

@@ -5,6 +5,7 @@ import Dashboard from '../pages/Dashboard/Dashboard';
 import LandingPage from '../pages/LandingPage';
 import LoginPage from '../pages/LoginPage';
 import SignupPage from '../pages/SignupPage';
+import PricingPage from '../pages/PricingPage';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import AdminManagementDashboard from '../pages/Customers/AdminManagementDashboard';
 
@@ -27,6 +28,7 @@ const AppRouter = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+        <Route path="/pricing" element={<PageTransition><PricingPage /></PageTransition>} />
         <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><SignupPage /></PageTransition>} />
         <Route path="/admin/login" element={<PageTransition><LoginPage /></PageTransition>} />
