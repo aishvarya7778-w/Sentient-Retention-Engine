@@ -3,7 +3,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar, Legend
 } from 'recharts';
-import { ModelCard, FeatureImportance, AuditLogTable } from './DashboardComponents';
+import { AuditLogTable } from './DashboardComponents';
 
 const LiveAnalyticsSection = ({ data, auditLogs = [], searchTerm = '', onSearch = () => {} }) => {
   const { churnTrend, segmentDistribution, retentionImpact } = data;
@@ -159,13 +159,6 @@ const LiveAnalyticsSection = ({ data, auditLogs = [], searchTerm = '', onSearch 
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
-
-      {/* Bottom Row: Model Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <ModelCard name="Churn_XGB_v4" latency="14ms" accuracy="94.2%" />
-        <ModelCard name="Sentiment_LSTM" latency="42ms" accuracy="88.5%" accLabel="F1 Score" />
-        <FeatureImportance />
       </div>
 
       {/* Audit Log Table Integration */}

@@ -4,7 +4,8 @@ import ForceGraph2D from 'react-force-graph-2d';
 import { FixedSizeList } from 'react-window';
 import {
   Globe, Activity, Share2, BarChart2, AlertOctagon,
-  Bell, Settings, X, ArrowRight, Menu, Wifi, User, Search, Users, LogOut, Shield, Layout, Download
+  Bell, Settings, X, ArrowRight, Menu, Wifi, User, Search, Users, LogOut, Shield, Layout, Download,
+  Building2, ChevronRight, Briefcase
 } from 'lucide-react';
 
 import SpecialistDashboard from './SpecialistDashboard';
@@ -22,7 +23,8 @@ const Dashboard = ({ isAdminView = false }) => {
   const {
     kpis, auditLogs, liveEvents, isPipelineRunning, terminalText, nodeData,
     escalations, setEscalations, claimedEscalations, setClaimedEscalations, isSearching, analyticsData, opsLogs,
-    runPipeline, handleManualSearch, setTriggerAction, refreshData, logout, claimEscalation
+    runPipeline, handleManualSearch, setTriggerAction, refreshData, logout, claimEscalation,
+    workspaces, activeWorkspace, setActiveWorkspace
   } = useDashboardData();
 
   const handleClaim = async (id) => {
@@ -64,6 +66,7 @@ const Dashboard = ({ isAdminView = false }) => {
   const [selectedChainId, setSelectedChainId] = useState(null);
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [aiReasoningEntity, setAiReasoningEntity] = useState(null);
+  const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false);
 
   const containerRef = useRef();
   const graphRef = useRef();
@@ -270,10 +273,10 @@ const Dashboard = ({ isAdminView = false }) => {
   }, [hoverNode, selectedNode, activeNodeId]);
 
   const navItems = [
-    { name: 'Activity', icon: Activity, id: 'Activity' },
-    { name: 'Pipeline', icon: Share2, id: 'Pipeline' },
-    { name: 'Analytics', icon: BarChart2, id: 'Analytics' },
-    { name: 'Escalations', icon: AlertOctagon, id: 'Escalations' },
+    { name: 'Executive Overview', icon: Globe, id: 'Activity' },
+    { name: 'Neural Topology', icon: Share2, id: 'Pipeline' },
+    { name: 'Observability', icon: Activity, id: 'Analytics' },
+    { name: 'Action Center', icon: AlertOctagon, id: 'Escalations' },
   ];
 
   return (
@@ -305,9 +308,74 @@ const Dashboard = ({ isAdminView = false }) => {
       <div className={`flex w-full h-full relative z-10 transition-all duration-500 ${isFullView ? 'p-0' : 'p-4 md:p-6 lg:p-8'}`}>
         <div className="w-24 flex flex-col items-center pt-8 shrink-0 animate-in fade-in slide-in-from-left-4 duration-500 border-r-2 border-cyber-primary/20 bg-[#080808] z-20 shadow-[8px_0_32px_rgba(0,0,0,0.8)] relative">
           <div className="absolute inset-y-0 right-0 w-[1px] bg-cyber-primary/5" />
-          <Link to="/" className="mb-14 hover:opacity-80 transition-opacity">
+          <Link to="/" className="mb-8 hover:opacity-80 transition-opacity">
             <BrandLogo isSidebar={true} />
           </Link>
+          
+          {/* Workspace Switcher */}
+          <div className="relative mb-8 w-full px-4">
+            <button 
+              onClick={() => setIsWorkspaceMenuOpen(!isWorkspaceMenuOpen)}
+              className="w-full flex flex-col items-center gap-1 group relative transition-all"
+            >
+              <div 
+                className="w-12 h-12 flex items-center justify-center font-display font-black text-lg border-2 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+                style={{ 
+                  borderColor: activeWorkspace?.color || '#c5f82a',
+                  color: activeWorkspace?.color || '#c5f82a',
+                  backgroundColor: `${activeWorkspace?.color || '#c5f82a'}15`
+                }}
+              >
+                {activeWorkspace?.logo || 'WS'}
+              </div>
+              <span className="text-[9px] uppercase font-bold text-zinc-400 group-hover:text-white truncate w-full text-center mt-1 transition-colors">
+                {activeWorkspace?.name || 'Workspace'}
+              </span>
+            </button>
+
+            {isWorkspaceMenuOpen && (
+              <div className="absolute top-0 left-20 w-64 bg-[#0a0a0a] border border-zinc-800 shadow-2xl z-50 p-2 animate-in slide-in-from-left-2 fade-in">
+                <div className="px-3 py-2 border-b border-zinc-800/50 mb-2">
+                  <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Select Organization</span>
+                </div>
+                {workspaces.map((ws) => (
+                  <button
+                    key={ws.id}
+                    onClick={() => {
+                      setActiveWorkspace(ws);
+                      setIsWorkspaceMenuOpen(false);
+                      triggerAction(`Switched to tenant: ${ws.name}`);
+                    }}
+                    className={`w-full text-left px-3 py-3 flex items-center gap-3 transition-colors hover:bg-zinc-900 group ${activeWorkspace?.id === ws.id ? 'bg-zinc-900/50' : ''}`}
+                  >
+                    <div 
+                      className="w-8 h-8 flex shrink-0 items-center justify-center font-display font-bold text-xs border"
+                      style={{ 
+                        borderColor: ws.color, 
+                        color: ws.color,
+                        backgroundColor: activeWorkspace?.id === ws.id ? `${ws.color}20` : 'transparent'
+                      }}
+                    >
+                      {ws.logo}
+                    </div>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="text-sm font-semibold text-zinc-200 truncate group-hover:text-white">{ws.name}</span>
+                      <span className="text-[10px] text-zinc-500 truncate">{ws.id}.sentient.ai</span>
+                    </div>
+                    {activeWorkspace?.id === ws.id && (
+                      <div className="ml-auto w-2 h-2 rounded-full" style={{ backgroundColor: ws.color }} />
+                    )}
+                  </button>
+                ))}
+                <div className="mt-2 pt-2 border-t border-zinc-800/50">
+                  <button className="w-full text-left px-3 py-2 flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors">
+                    <Settings size={14} /> Manage Workspaces
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex flex-col gap-8 items-center">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -321,7 +389,7 @@ const Dashboard = ({ isAdminView = false }) => {
                   <div className={`w-12 h-12 flex items-center justify-center transition-all border ${isActive ? 'bg-cyber-primary text-cyber-black border-cyber-primary shadow-[0_0_20px_rgba(197,248,42,0.4)]' : 'bg-transparent border-zinc-800 group-hover:border-zinc-600'}`}>
                     <Icon size={20} />
                   </div>
-                  <span className="text-[8px] uppercase font-black tracking-[0.2em] font-display">{item.name}</span>
+                  <span className="text-[8px] uppercase font-black tracking-[0.2em] font-display text-center leading-tight mt-1">{item.name}</span>
                 </button>
               );
             })}
@@ -371,99 +439,43 @@ const Dashboard = ({ isAdminView = false }) => {
         
         <div className={`flex-1 flex flex-col min-w-0 ${isFullView ? 'pl-6' : 'pl-10 lg:pl-12'}`}>
           {activeTab === 'Activity' && (
-            <div className="flex flex-col h-full bg-cyber-black border border-cyber-border p-6 shadow-2xl relative overflow-hidden">
-              <div className="grid grid-cols-4 gap-6 shrink-0 mb-6">
-                <ActivityKPICard title="INTERVENTIONS TODAY" value={(kpis?.interventions_today || 0).toLocaleString()} />
-                <ActivityKPICard title="CHURN PREVENTED" value={kpis?.churn_prevented || '0%'} />
-                <ActivityKPICard title="TOTAL PROCESSED" value={(kpis?.total_processed || 0).toLocaleString()} />
-                <ActivityKPICard title="ACTIVE CUSTOMERS" value={(kpis?.active_users || 0).toLocaleString()} hasTrend={false} />
+            <div className="flex flex-col h-full bg-[#070c08]/80 backdrop-blur-xl border border-cyber-border/50 rounded-2xl shadow-2xl relative overflow-hidden">
+              <div className="p-8 pb-4 shrink-0 border-b border-cyber-border/30 bg-[#0a120d]/80">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border"
+                        style={{ color: activeWorkspace?.color, borderColor: `${activeWorkspace?.color}40`, backgroundColor: `${activeWorkspace?.color}10` }}>
+                        {activeWorkspace?.name}
+                      </span>
+                    </div>
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tighter font-display">Executive Revenue Intelligence</h1>
+                    <p className="text-xs text-gray-500 tracking-wider uppercase font-bold mt-1">Real-time business outcomes and retention impact</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyber-primary/10 border border-cyber-primary/20">
+                      <div className="w-2 h-2 bg-cyber-primary rounded-full animate-pulse"></div>
+                      <span className="text-[10px] text-cyber-primary font-black uppercase tracking-widest font-display">System Optimal</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+                  <ActivityKPICard title="REVENUE AT RISK" value={kpis?.revenue_at_risk || '$1.24M'} />
+                  <ActivityKPICard title="REVENUE PROTECTED" value={kpis?.revenue_protected || '$840K'} />
+                  <ActivityKPICard title="CUSTOMERS SAVED" value={(kpis?.customers_saved || 142).toLocaleString()} />
+                  <ActivityKPICard title="RETENTION ROI" value={kpis?.retention_roi || '312%'} />
+                  <ActivityKPICard title="CHURN REDUCTION" value={kpis?.churn_reduction || '14%'} />
+                  <ActivityKPICard title="HIGH-RISK ACCOUNTS" value={(kpis?.high_risk_accounts || 42).toLocaleString()} hasTrend={false} />
+                </div>
               </div>
 
-              <div className="flex gap-8 flex-1 min-h-0">
-                <div className="w-[60%] flex flex-col h-full bg-cyber-surface border border-cyber-border p-5 relative shadow-brutalist">
-                  <div className="flex justify-between items-start mb-6 shrink-0">
-                    <div>
-                      <h2 className="text-xl font-black text-white uppercase tracking-tighter font-display">Agent Activity Stream</h2>
-                      <div className="flex items-center gap-2 text-cyber-primary text-[9px] uppercase font-black tracking-[0.2em] mt-2 font-display">
-                        <Activity size={12} className="animate-pulse" /> Neural Observability Active
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="relative group">
-                        <input 
-                          type="text" 
-                          value={activitySearchId} 
-                          onChange={e => setActivitySearchId(e.target.value)}
-                          placeholder="TARGET_CUSTOMER_ID..." 
-                          className="w-48 bg-cyber-black border border-cyber-border py-2 pl-9 pr-3 text-[9px] text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-cyber-primary/40 transition-all font-mono uppercase font-black"
-                        />
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-cyber-primary transition-colors" />
-                      </div>
-                      <button 
-                        onClick={() => runPipeline(setActiveNodeId, activitySearchId)}
-                        disabled={isPipelineRunning}
-                        className={`px-4 py-2 font-black text-[9px] uppercase tracking-widest transition-all ${
-                          isPipelineRunning ? 'bg-zinc-900 text-zinc-700 cursor-not-allowed border border-zinc-800' : 'bg-cyber-primary text-cyber-black hover:shadow-[0_0_15px_rgba(197,248,42,0.3)] active:translate-y-0.5'
-                        }`}
-                      >
-                        {isPipelineRunning ? 'SYS_BUSY' : (activitySearchId ? 'RUN_TARGETED' : 'RUN_PIPELINE')}
-                      </button>
-                    </div>
-                    <button 
-                      onClick={() => setIsPaused(!isPaused)}
-                      className={`border border-cyber-border px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors ${
-                        isPaused ? 'bg-cyber-primary text-cyber-black' : 'bg-cyber-black text-zinc-500 hover:text-white hover:border-zinc-600'
-                      }`}
-                    >
-                      {isPaused ? 'RESUME_FEED' : 'PAUSE_FEED'}
-                    </button>
-                  </div>
-                  
-                  <div className="flex-1 min-h-0" ref={eventsContainerRef}>
-                    {liveEvents.length > 0 ? (
-                      <FixedSizeList
-                        height={eventsDimensions.height || 400}
-                        itemCount={liveEvents.length}
-                        itemSize={140}
-                        itemData={liveEvents}
-                      >
-                        {({ index, style, data }) => (
-                          <div style={style}>
-                            <LiveEventCard {...data[index]} onChainClick={handleEventClick} />
-                          </div>
-                        )}
-                      </FixedSizeList>
-                    ) : (
-                      <div className="text-center text-gray-500 py-8">No live events</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-[40%] flex flex-col h-full bg-cyber-surface border border-cyber-border p-5 shadow-brutalist">
-                  <h2 className="text-xl font-black text-white uppercase tracking-tighter font-display mb-6 shrink-0">Pipeline Live View</h2>
-                  <div className="flex-1 relative overflow-hidden bg-cyber-black border border-cyber-border shadow-inner flex items-center justify-center">
-                    <div className="absolute inset-0" ref={activityContainerRef}>
-                      {pipelineGraphData.nodes.length > 0 && activityDimensions.width > 0 ? (
-                        <ForceGraph2D
-                          width={activityDimensions.width}
-                          height={activityDimensions.height}
-                          graphData={pipelineGraphData}
-                          nodeRelSize={5}
-                          backgroundColor="rgba(0,0,0,0)"
-                          linkColor={() => '#1A1A1A'}
-                          linkOpacity={0.8}
-                          linkWidth={1}
-                          nodeCanvasObject={activityNodeCanvasObject}
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full opacity-30">
-                          <div className="w-12 h-12 border-2 border-dashed border-cyber-primary animate-spin-slow mb-4" />
-                          <span className="text-[10px] uppercase tracking-[0.3em] font-black text-cyber-primary font-display">Initializing Neural Path...</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <LiveAnalyticsSection 
+                  data={analyticsData} 
+                  auditLogs={auditLogs} 
+                  searchTerm={auditSearchTerm} 
+                  onSearch={setAuditSearchTerm} 
+                />
               </div>
             </div>
           )}
@@ -472,6 +484,10 @@ const Dashboard = ({ isAdminView = false }) => {
             <div className={`flex flex-col flex-1 h-full min-h-0 relative`}>
               <div className={`flex-1 transition-all duration-700 ease-in-out relative overflow-hidden flex shadow-2xl ${isFullView ? 'bg-black h-full w-full' : 'bg-cyber-black border border-cyber-border shadow-brutalist'}`}>
                 <div className="absolute top-8 left-8 z-50 flex gap-3">
+                  <span className="text-[10px] font-bold tracking-widest uppercase px-4 py-2 border animate-in zoom-in-50 duration-300 font-display"
+                    style={{ color: activeWorkspace?.color, borderColor: `${activeWorkspace?.color}40`, backgroundColor: `${activeWorkspace?.color}10`, boxShadow: `0 0 15px ${activeWorkspace?.color}20` }}>
+                    {activeWorkspace?.name}
+                  </span>
                   <div className="px-4 py-2 bg-cyber-primary text-cyber-black font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-[0_0_20px_rgba(197,248,42,0.4)] animate-in zoom-in-50 duration-300 font-display">
                     <div className="w-2 h-2 bg-cyber-black rounded-full animate-pulse"></div>
                     Live Pipeline Environment
@@ -601,49 +617,19 @@ const Dashboard = ({ isAdminView = false }) => {
           )}
 
           {activeTab === 'Analytics' && (
-            <div className="flex flex-col h-full overflow-hidden">
-              {/* Analytics Header */}
-              <div className="flex-none px-8 py-6 border-b border-[#233529]/30">
-                <div className="flex justify-between items-center mb-8 shrink-0 relative">
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <button 
-                        onClick={() => setIsCommandMenuOpen(!isCommandMenuOpen)} 
-                        className={`w-9 h-9 rounded-full ${isCommandMenuOpen ? 'bg-[#c5f82a] text-[#070c08]' : 'bg-[#121c16] text-gray-400'} border border-[#233529] flex items-center justify-center hover:text-white transition-colors shadow-inner`}
-                      >
-                        <Menu size={16} />
-                      </button>
-                      
-                      {isCommandMenuOpen && (
-                        <div className="absolute top-full left-0 mt-2 w-56 bg-[#0a120d] border border-[#233529] rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200">
-                          <div className="p-2 border-b border-[#233529]/50 bg-[#121c16]/50">
-                            <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold px-3 py-1 font-display">Command Menu</span>
-                          </div>
-                            <div className="py-1">
-                              <button onClick={() => { exportToCSV(analyticsData.churnTrend, 'churn_propensity_report'); setIsCommandMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs text-gray-300 hover:bg-[#c5f82a]/10 hover:text-[#c5f82a] transition-colors">
-                                <BarChart2 size={14} /> Export Analytics Report
-                              </button>
-                              <button onClick={() => { triggerAction('Preferences: Auto-refresh enabled'); setIsCommandMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs text-gray-300 hover:bg-[#c5f82a]/10 hover:text-[#c5f82a] transition-colors">
-                                <Settings size={14} /> View Preferences
-                              </button>
-                              <button onClick={() => { refreshData(); setIsCommandMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs text-gray-300 hover:bg-[#c5f82a]/10 hover:text-[#c5f82a] transition-colors">
-                                <Activity size={14} /> Force Live Refresh
-                              </button>
-                              <div className="border-t border-[#233529]/30 my-1"></div>
-                              <a href="https://github.com/raghuvanshi-sec/Sentient-Retention-Engine#readme" target="_blank" rel="noopener noreferrer" onClick={() => setIsCommandMenuOpen(false)} className="w-full flex items-center gap-3 px-4 py-2 text-xs text-gray-400 hover:bg-white/5 transition-colors">
-                                <Globe size={14} /> Documentation
-                              </a>
-                            </div>
-                          </div>
-                      )}
+            <div className="flex flex-col h-full overflow-hidden bg-cyber-black border border-cyber-border rounded-2xl shadow-2xl relative">
+              <div className="flex-none px-8 py-6 border-b border-[#233529]/30 bg-[#0a120d]/80">
+                <div className="flex justify-between items-center relative">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border"
+                        style={{ color: activeWorkspace?.color, borderColor: `${activeWorkspace?.color}40`, backgroundColor: `${activeWorkspace?.color}10` }}>
+                        {activeWorkspace?.name}
+                      </span>
                     </div>
-                    
-                    <div className="text-gray-200 font-bold tracking-widest flex items-center gap-3 text-sm font-display">
-                      <div className="w-2 h-2 bg-[#c5f82a] rounded-full shadow-[0_0_8px_#c5f82a]"></div>
-                      SRE <span className="text-gray-600 font-normal mx-1">/</span> LIVE ANALYTICS
-                    </div>
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tighter font-display">System Observability</h1>
+                    <p className="text-xs text-gray-500 tracking-wider uppercase font-bold mt-1">Agent orchestration and neural pipeline telemetry</p>
                   </div>
-                  
                   <div className="flex items-center gap-5">
                     <div className="relative">
                       <Wifi 
@@ -681,48 +667,96 @@ const Dashboard = ({ isAdminView = false }) => {
                         </div>
                       )}
                     </div>
+                  </div>
+                </div>
+              </div>
 
-                    <div className="relative">
-                      <User 
-                        size={18} 
-                        className={`${isUserMenuOpen ? 'text-[#c5f82a]' : 'text-gray-400'} cursor-pointer hover:text-[#c5f82a] transition-colors`} 
-                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} 
-                      />
-                      
-                      {isUserMenuOpen && (
-                        <div className="absolute top-full right-0 mt-3 w-56 bg-[#0a120d] border border-[#233529] rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200">
-                          <div className="p-4 border-b border-[#233529]/50 bg-[#121c16]/50">
-                            <div className="text-xs font-bold text-gray-200 font-display">{displayName}</div>
-                            <div className="text-[10px] text-gray-500 font-display uppercase tracking-wider">{isAdminView ? 'System Administrator' : 'Retention Specialist'}</div>
+              <div className="flex-1 p-6 flex gap-6 overflow-hidden">
+                <div className="w-[60%] flex flex-col h-full bg-[#0a120d]/80 border border-cyber-border/50 rounded-xl p-5 relative shadow-inner">
+                  <div className="flex justify-between items-start mb-6 shrink-0">
+                    <div>
+                      <h2 className="text-lg font-black text-white uppercase tracking-tighter font-display">Agent Activity Stream</h2>
+                      <div className="flex items-center gap-2 text-cyber-primary text-[9px] uppercase font-black tracking-[0.2em] mt-2 font-display">
+                        <Activity size={12} className="animate-pulse" /> Neural Observability Active
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="relative group">
+                        <input 
+                          type="text" 
+                          value={activitySearchId} 
+                          onChange={e => setActivitySearchId(e.target.value)}
+                          placeholder="TARGET_CUSTOMER_ID..." 
+                          className="w-48 bg-cyber-black border border-cyber-border py-2 pl-9 pr-3 text-[9px] text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-cyber-primary/40 transition-all font-mono uppercase font-black rounded-md"
+                        />
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-700 group-focus-within:text-cyber-primary transition-colors" />
+                      </div>
+                      <button 
+                        onClick={() => runPipeline(setActiveNodeId, activitySearchId)}
+                        disabled={isPipelineRunning}
+                        className={`px-4 py-2 rounded-md font-black text-[9px] uppercase tracking-widest transition-all ${
+                          isPipelineRunning ? 'bg-zinc-900 text-zinc-700 cursor-not-allowed border border-zinc-800' : 'bg-cyber-primary text-cyber-black hover:shadow-[0_0_15px_rgba(197,248,42,0.3)] active:translate-y-0.5'
+                        }`}
+                      >
+                        {isPipelineRunning ? 'SYS_BUSY' : (activitySearchId ? 'RUN_TARGETED' : 'RUN_PIPELINE')}
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => setIsPaused(!isPaused)}
+                      className={`border border-cyber-border rounded-md px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors ${
+                        isPaused ? 'bg-cyber-primary text-cyber-black' : 'bg-cyber-black text-zinc-500 hover:text-white hover:border-zinc-600'
+                      }`}
+                    >
+                      {isPaused ? 'RESUME_FEED' : 'PAUSE_FEED'}
+                    </button>
+                  </div>
+                  
+                  <div className="flex-1 min-h-0" ref={eventsContainerRef}>
+                    {liveEvents.length > 0 ? (
+                      <FixedSizeList
+                        height={eventsDimensions.height || 400}
+                        itemCount={liveEvents.length}
+                        itemSize={140}
+                        itemData={liveEvents}
+                      >
+                        {({ index, style, data }) => (
+                          <div style={style}>
+                            <LiveEventCard {...data[index]} onChainClick={handleEventClick} />
                           </div>
-                          <div className="py-1">
-                            <button onClick={() => { triggerAction('Loading Profile...'); setIsUserMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs text-gray-300 hover:bg-[#c5f82a]/10 hover:text-[#c5f82a] transition-colors">
-                              <User size={14} /> Account Settings
-                            </button>
-                            <button onClick={() => { triggerAction('Updating Security...'); setIsUserMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs text-gray-300 hover:bg-[#c5f82a]/10 hover:text-[#c5f82a] transition-colors">
-                              <Shield size={14} /> Security Keys
-                            </button>
-                            <div className="border-t border-[#233529]/30 my-1"></div>
-                            <button 
-                              onClick={() => { setIsUserMenuOpen(false); logout(); }} 
-                              className="w-full flex items-center gap-3 px-4 py-2 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
-                            >
-                              <LogOut size={14} /> Sign Out
-                            </button>
-                          </div>
+                        )}
+                      </FixedSizeList>
+                    ) : (
+                      <div className="text-center text-gray-500 py-8 font-mono text-xs">No live events detected</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="w-[40%] flex flex-col h-full bg-[#0a120d]/80 border border-cyber-border/50 rounded-xl p-5 shadow-inner">
+                  <h2 className="text-lg font-black text-white uppercase tracking-tighter font-display mb-6 shrink-0">Pipeline Live View</h2>
+                  <div className="flex-1 relative overflow-hidden bg-[#050505] border border-cyber-border rounded-lg shadow-inner flex items-center justify-center">
+                    <div className="absolute inset-0" ref={activityContainerRef}>
+                      {pipelineGraphData.nodes.length > 0 && activityDimensions.width > 0 ? (
+                        <ForceGraph2D
+                          width={activityDimensions.width}
+                          height={activityDimensions.height}
+                          graphData={pipelineGraphData}
+                          nodeRelSize={5}
+                          backgroundColor="rgba(0,0,0,0)"
+                          linkColor={() => '#1A1A1A'}
+                          linkOpacity={0.8}
+                          linkWidth={1}
+                          nodeCanvasObject={activityNodeCanvasObject}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full opacity-30">
+                          <div className="w-12 h-12 border-2 border-dashed border-cyber-primary animate-spin-slow mb-4" />
+                          <span className="text-[10px] uppercase tracking-[0.3em] font-black text-cyber-primary font-display">Initializing Neural Path...</span>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
               </div>
-
-              <LiveAnalyticsSection 
-                data={analyticsData} 
-                auditLogs={auditLogs} 
-                searchTerm={auditSearchTerm} 
-                onSearch={setAuditSearchTerm} 
-              />
             </div>
           )}
 
@@ -731,7 +765,13 @@ const Dashboard = ({ isAdminView = false }) => {
               <div className="flex flex-col mb-6 shrink-0 gap-4">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-4">
-                    <div className="text-gray-200 font-bold tracking-widest flex items-center text-sm font-display">SENTIENT RETENTION ENGINE <span className="text-gray-600 font-normal mx-3">|</span> <span className="text-gray-400 font-normal">Human Handoff Queue</span></div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border"
+                        style={{ color: activeWorkspace?.color, borderColor: `${activeWorkspace?.color}40`, backgroundColor: `${activeWorkspace?.color}10` }}>
+                        {activeWorkspace?.name}
+                      </span>
+                      <div className="text-gray-200 font-bold tracking-widest flex items-center text-sm font-display">SENTIENT RETENTION ENGINE <span className="text-gray-600 font-normal mx-3">|</span> <span className="text-gray-400 font-normal">Human Handoff Queue</span></div>
+                    </div>
                     <div className="bg-[#c5f82a] text-[#0a110b] px-3 py-1 rounded-full font-bold text-[10px] tracking-wider shadow-[0_0_10px_rgba(197,248,42,0.2)] font-display">{escalations.length} Active</div>
                   </div>
                   <div className="flex items-center gap-5">

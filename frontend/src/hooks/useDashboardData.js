@@ -3,13 +3,34 @@ import { debounce } from 'lodash';
 import config from '../config';
 
 export const useDashboardData = () => {
-  const [kpis, setKpis] = useState({
-    interventions_today: 0,
-    total_processed: 0,
-    churn_prevented: '0%',
-    active_users: 0,
-    distribution: []
+  const workspaces = [
+    { 
+      id: 'acme', name: 'Acme SaaS', logo: 'AC', color: '#c5f82a',
+      kpis: { revenue_at_risk: '$1.24M', revenue_protected: '$840K', customers_saved: 142, retention_roi: '312%', churn_reduction: '14%', high_risk_accounts: 42, interventions_today: 0, total_processed: 0, churn_prevented: '0%', active_users: 0, distribution: [] }
+    },
+    { 
+      id: 'fintech', name: 'FinTech Pro', logo: 'FP', color: '#3b82f6',
+      kpis: { revenue_at_risk: '$4.5M', revenue_protected: '$2.1M', customers_saved: 56, retention_roi: '450%', churn_reduction: '8%', high_risk_accounts: 18, interventions_today: 0, total_processed: 0, churn_prevented: '0%', active_users: 0, distribution: [] }
+    },
+    { 
+      id: 'growthos', name: 'GrowthOS', logo: 'GO', color: '#f87171',
+      kpis: { revenue_at_risk: '$850K', revenue_protected: '$420K', customers_saved: 201, retention_roi: '210%', churn_reduction: '22%', high_risk_accounts: 89, interventions_today: 0, total_processed: 0, churn_prevented: '0%', active_users: 0, distribution: [] }
+    },
+    { 
+      id: 'enterprise', name: 'Enterprise Cloud', logo: 'EC', color: '#a855f7',
+      kpis: { revenue_at_risk: '$12.8M', revenue_protected: '$9.2M', customers_saved: 14, retention_roi: '890%', churn_reduction: '5%', high_risk_accounts: 4, interventions_today: 0, total_processed: 0, churn_prevented: '0%', active_users: 0, distribution: [] }
+    }
+  ];
+  const [activeWorkspace, setActiveWorkspace] = useState(() => {
+    const saved = localStorage.getItem('activeWorkspaceId');
+    if (saved) {
+      const found = workspaces.find(w => w.id === saved);
+      if (found) return found;
+    }
+    return workspaces[0];
   });
+
+  const [kpis, setKpis] = useState(activeWorkspace.kpis);
   const [auditLogs, setAuditLogs] = useState([]);
   const [liveEvents, setLiveEvents] = useState([]);
   const [isPipelineRunning, setIsPipelineRunning] = useState(false);
@@ -27,6 +48,15 @@ export const useDashboardData = () => {
   });
   const [opsLogs, setOpsLogs] = useState([]);
   const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem('activeWorkspaceId', activeWorkspace.id);
+    setKpis(activeWorkspace.kpis);
+    setLiveEvents([]);
+    setAuditLogs([]);
+    setOpsLogs([]);
+    setEscalations([]);
+  }, [activeWorkspace]);
 
   const triggerActionRef = useRef(null);
 
@@ -284,7 +314,7 @@ export const useDashboardData = () => {
   const fetchData = useCallback(async () => {
     try {
       const headers = getAuthHeaders();
-      const kpiRes = await fetch(`${config.API_BASE_URL}/kpis`, { headers });
+      const kpiRes = await fetch(`${config.API_BASE_URL}/kpis?tenant=${activeWorkspace.id}`, { headers });
       
       if (kpiRes.status === 401 || kpiRes.status === 403) {
         logout();
@@ -293,10 +323,16 @@ export const useDashboardData = () => {
 
       if (kpiRes.ok) {
         const kpiData = await kpiRes.json();
-        setKpis(prev => ({ ...prev, ...kpiData }));
+        // Only merge dynamic/real-time fields from backend, keep tenant static mock metrics
+        setKpis(prev => ({ 
+          ...prev, 
+          interventions_today: kpiData.interventions_today ?? prev.interventions_today,
+          total_processed: kpiData.total_processed ?? prev.total_processed,
+          active_users: kpiData.active_users ?? prev.active_users
+        }));
       }
 
-      const logsRes = await fetch(`${config.API_BASE_URL}/audit-logs?limit=10`, { headers });
+      const logsRes = await fetch(`${config.API_BASE_URL}/audit-logs?limit=10&tenant=${activeWorkspace.id}`, { headers });
       if (logsRes.ok) {
         const logsData = await logsRes.json();
         setAuditLogs(logsData.logs || []);
@@ -304,7 +340,7 @@ export const useDashboardData = () => {
     } catch (err) {
       console.error('Failed to fetch live dashboard data:', err);
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, activeWorkspace.id]);
 
   const fetchClaimed = useCallback(async () => {
     try {
@@ -312,7 +348,7 @@ export const useDashboardData = () => {
       const specialistId = user.id || config.DEFAULT_SPECIALIST_ID;
       const headers = getAuthHeaders();
       
-      const res = await fetch(`${config.API_BASE_URL}/escalations/claimed?specialist_id=${specialistId}`, { headers });
+      const res = await fetch(`${config.API_BASE_URL}/escalations/claimed?specialist_id=${specialistId}&tenant=${activeWorkspace.id}`, { headers });
       
       if (res.status === 401 || res.status === 403) {
         logout();
@@ -326,7 +362,7 @@ export const useDashboardData = () => {
     } catch (err) {
       console.warn('Could not load claimed escalations:', err);
     }
-  }, [getAuthHeaders]);
+  }, [getAuthHeaders, activeWorkspace.id]);
 
   useEffect(() => {
     fetchData();
@@ -403,7 +439,9 @@ export const useDashboardData = () => {
         setKpis(prev => ({
           ...prev,
           total_processed: prev.total_processed + 1,
-          interventions_today: prev.interventions_today + (Math.random() > 0.9 ? 1 : 0)
+          interventions_today: prev.interventions_today + (Math.random() > 0.9 ? 1 : 0),
+          customers_saved: prev.customers_saved + (Math.random() > 0.8 ? 1 : 0),
+          high_risk_accounts: prev.high_risk_accounts + (Math.random() > 0.5 ? (Math.random() > 0.5 ? 1 : -1) : 0)
         }));
       }
     }, 3000);
@@ -620,6 +658,9 @@ export const useDashboardData = () => {
     },
     setTriggerAction,
     refreshData,
-    logout
+    logout,
+    workspaces,
+    activeWorkspace,
+    setActiveWorkspace
   };
 };
