@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+import os
 from typing import Dict, Any, List
 from langchain_core.messages import HumanMessage, SystemMessage
 from ..state import RetentionState
@@ -37,7 +38,8 @@ def node_risk_analysis(state: RetentionState) -> Dict[str, Any]:
     }
     
     try:
-        response = requests.post("http://127.0.0.1:8001/predict", json=payload, timeout=5)
+        ml_service_url = os.getenv("ML_SERVICE_URL", "http://127.0.0.1:8001")
+        response = requests.post(f"{ml_service_url}/predict", json=payload, timeout=5)
         churn_score = float(response.json().get("churn_risk", 0.5)) if response.status_code == 200 else 0.5
     except Exception as e:
         emit_telemetry(state, "RiskAnalysisAgent", "ML_ERROR", f"ML service call failed: {str(e)}")

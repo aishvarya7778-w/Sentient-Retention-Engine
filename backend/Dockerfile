@@ -4,14 +4,17 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from repo root
+COPY backend/package*.json ./
 
 # Install dependencies
 RUN npm ci --only=production
 
 # Copy application code
-COPY . .
+COPY backend/ .
+
+# Copy shared validation schemas to the relative path expected by the backend
+COPY shared/ ../shared/
 
 # Expose port
 EXPOSE 8000
