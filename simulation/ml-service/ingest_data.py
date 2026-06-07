@@ -11,7 +11,7 @@ DB_URL = os.getenv("DATABASE_URL")
 if not DB_URL:
     raise ValueError("DATABASE_URL environment variable is not set")
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "database", "Telco-Customer-Churn.csv")
+CSV_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "infra", "database", "Telco-Customer-Churn.csv")
 
 def ingest_data():
     if not os.path.exists(CSV_PATH):

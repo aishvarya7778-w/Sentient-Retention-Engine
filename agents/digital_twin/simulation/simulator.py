@@ -13,6 +13,29 @@ class UserProfile:
     payment_delay: int
     churn_risk: float
 
+    def __post_init__(self):
+        # Clip values to ensure validity
+        try:
+            self.usage = max(0.0, float(self.usage))
+        except (TypeError, ValueError):
+            self.usage = 0.0
+            
+        try:
+            self.complaints = max(0, int(self.complaints))
+        except (TypeError, ValueError):
+            self.complaints = 0
+            
+        try:
+            self.payment_delay = max(0, int(self.payment_delay))
+        except (TypeError, ValueError):
+            self.payment_delay = 0
+            
+        try:
+            self.churn_risk = max(0.0, min(1.0, float(self.churn_risk)))
+        except (TypeError, ValueError):
+            self.churn_risk = 0.5
+
+
 
 @dataclass
 class SimulationResult:

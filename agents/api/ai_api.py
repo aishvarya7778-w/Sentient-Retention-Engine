@@ -12,8 +12,10 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.workflow import build_workflow
+from digital_twin.api.twin_api import router as twin_router
 
 app = FastAPI(title="Sentient Retention AI Engine")
+app.include_router(twin_router, prefix="/api/twin")
 
 # Compile the graph once
 retention_graph = build_workflow()
